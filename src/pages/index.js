@@ -11,8 +11,8 @@ const features = [
     title: <>Truly reactive</>,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        React-RxJS allows you to express the dynamic behavior of your React
+        state at the time of its definition.
       </>
     ),
   },
@@ -20,17 +20,20 @@ const features = [
     title: <>Hihgly performant</>,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Modeling your state with observables enables an optimal state
+        propagation system based on forward referenced subscriptions. It also
+        prevents memory leaks and gives you a means for handling complex caches.
       </>
     ),
   },
   {
-    title: <>Build on top of React Suspense</>,
+    title: <>Optimal React integration</>,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        React-RxJS offers a hook-based API which leaverages React.Suspense when
+        an observable hasn't emited yet. It also has first-class support for
+        React ErrorBoundaries and all hooks created with the bindings can be
+        used for sharing state.
       </>
     ),
   },
@@ -55,10 +58,7 @@ function Home() {
   const context = useDocusaurusContext();
   const { siteConfig = {} } = context;
   return (
-    <Layout
-      title={siteConfig.title}
-      description="Description will go into a meta tag in <head />"
-    >
+    <Layout title={siteConfig.title} description="React bindings for RxJS">
       <header className={clsx("hero hero--primary", styles.heroBanner)}>
         <div className="container">
           <h1 className="hero__title">{siteConfig.title}</h1>
