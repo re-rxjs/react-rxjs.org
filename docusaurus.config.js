@@ -1,11 +1,11 @@
 module.exports = {
   title: "React-RxJS",
   tagline: "React bindings for RxJS",
-  url: "https://your-docusaurus-test-site.com",
+  url: "https://react-rxjs.org",
   baseUrl: "/",
   favicon: "img/favicon.ico",
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  organizationName: "re-rxjs", // Usually your GitHub org/user name.
+  projectName: "react-rxjs", // Usually your repo name.
   themeConfig: {
     navbar: {
       title: "React-RxJS",
@@ -21,7 +21,7 @@ module.exports = {
           position: "left",
         },
         {
-          href: "https://github.com/facebook/docusaurus",
+          href: "https://github.com/re-rxjs/react-rxjs",
           label: "GitHub",
           position: "right",
         },
@@ -34,12 +34,12 @@ module.exports = {
           title: "Learn",
           items: [
             {
-              label: "Style Guide",
+              label: "Getting Started",
               to: "docs/",
             },
             {
-              label: "Second Doc",
-              to: "docs/doc2/",
+              label: "Core Concepts",
+              to: "docs/coreConcepts/",
             },
           ],
         },
@@ -79,13 +79,13 @@ module.exports = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           editUrl:
-            "https://github.com/facebook/docusaurus/edit/master/website/",
+            "https://github.com/re-rxjs/react-rxjs.org/tree/master/",
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           editUrl:
-            "https://github.com/facebook/docusaurus/edit/master/website/blog/",
+            "https://github.com/re-rxjs/react-rxjs.org/tree/master/blog/",
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),

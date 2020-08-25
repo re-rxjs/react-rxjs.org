@@ -17,23 +17,23 @@ const features = [
     ),
   },
   {
-    title: <>Hihgly performant</>,
+    title: <>Highly performant</>,
     description: (
       <>
-        Modeling your state with observables enables an optimal state
-        propagation system based on forward referenced subscriptions. It also
+        Modeling your state with {' '} <Link to="https://rxjs-dev.firebaseapp.com/guide/observable">observables</Link> {' '} 
+        enables a state propagation system based on forward referenced subscriptions. It also
         prevents memory leaks and gives you a means for handling complex caches.
       </>
     ),
   },
   {
-    title: <>Optimal React integration</>,
+    title: <>Seamless React integration</>,
     description: (
       <>
-        React-RxJS offers a hook-based API which leaverages React.Suspense when
-        an observable hasn't emited yet. It also has first-class support for
-        React ErrorBoundaries and all hooks created with the bindings can be
-        used for sharing state.
+        React-RxJS offers a hook-based API with first-class support for {' '}
+        <Link to="https://reactjs.org/docs/concurrent-mode-suspense.html">React.Suspense</Link> {' '} and {' '}
+        <Link to="https://reactjs.org/docs/error-boundaries.html">Error Boundaries</Link>, 
+        and all hooks created with the bindings can be used for sharing state.
       </>
     ),
   },
