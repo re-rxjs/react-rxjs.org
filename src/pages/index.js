@@ -11,18 +11,8 @@ const features = [
     title: <>Truly reactive</>,
     description: (
       <>
-        React-RxJS allows you to express the dynamic behavior of your React
-        state at the time of its definition.
-      </>
-    ),
-  },
-  {
-    title: <>Highly performant</>,
-    description: (
-      <>
-        Modeling your state with {' '} <Link to="https://rxjs-dev.firebaseapp.com/guide/observable">observables</Link> {' '} 
-        enables a state propagation system based on forward referenced subscriptions. It also
-        prevents memory leaks and gives you a means for handling complex caches.
+        With React-RxJS you will be able to express the dynamic behavior of your
+        app's state completely at the time of its definition.
       </>
     ),
   },
@@ -30,13 +20,33 @@ const features = [
     title: <>Seamless React integration</>,
     description: (
       <>
-        React-RxJS offers a hook-based API with first-class support for {' '}
-        <Link to="https://reactjs.org/docs/concurrent-mode-suspense.html">React.Suspense</Link> {' '} and {' '}
-        <Link to="https://reactjs.org/docs/error-boundaries.html">Error Boundaries</Link>, 
-        and all hooks created with the bindings can be used for sharing state.
+        React-RxJS offers a hook-based API with first-class support for{" "}
+        <Link to="https://reactjs.org/docs/concurrent-mode-suspense.html">
+          React.Suspense
+        </Link>{" "}
+        and{" "}
+        <Link to="https://reactjs.org/docs/error-boundaries.html">
+          Error Boundaries
+        </Link>
+        . Also, all hooks created with React-RxJS can be used for sharing state.
       </>
     ),
   },
+  {
+    title: <>Highly performant</>,
+    description: (
+      <>
+        Modeling your state with{" "}
+        <Link to="https://rxjs-dev.firebaseapp.com/guide/observable">
+          observables
+        </Link>{" "}
+        enables a highly performant state propagation system based on forward
+        referencing subscriptions. It also prevents memory leaks, while it
+        provides a powerful means for handling complex caches.
+      </>
+    ),
+  },
+  ,
 ];
 
 function Feature({ imageUrl, title, description }) {
