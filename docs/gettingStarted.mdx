@@ -11,13 +11,13 @@ import CharacterCounter from "./examples/CharacterCounter";
 React-RxJS is published in npm as `@react-rxjs/core`
 
 ```sh
-yarn add @react-rxjs/core
+npm i @react-rxjs/core
 ```
 
-or using npm
+or using yarn
 
 ```sh
-npm i @react-rxjs/core
+yarn add @react-rxjs/core
 ```
 
 ## Create a hook from an observable
@@ -53,13 +53,13 @@ function TextInput() {
 `bind` returns a tuple that contains the hook, plus the underlying shared observable so it can be used by other streams:
 
 ```tsx
-import { map } from "rxjs/operators";
+import { pluck } from "rxjs/operators";
 import { bind } from "@react-rxjs/core";
 
 // Previously...
 // const [useText, text$] = bind(...);
 
-const [useCharCount] = bind(text$.pipe(map((v) => v.length)));
+const [useCharCount] = bind(text$.pipe(pluck("length")));
 
 function CharacterCount() {
   const count = useCharCount();

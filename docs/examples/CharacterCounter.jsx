@@ -1,6 +1,6 @@
 import React from "react";
 import { Subject } from "rxjs";
-import { map, startWith } from "rxjs/operators";
+import { pluck, startWith } from "rxjs/operators";
 import { bind } from "@react-rxjs/core";
 
 const textSubject = new Subject();
@@ -23,7 +23,7 @@ function TextInput() {
   );
 }
 
-const [useCharCount] = bind(text$.pipe(map((v) => v.length)));
+const [useCharCount] = bind(text$.pipe(pluck("length")));
 
 function CharacterCount() {
   const count = useCharCount();
