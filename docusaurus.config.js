@@ -39,7 +39,7 @@ module.exports = {
             },
             {
               label: "Core Concepts",
-              to: "docs/coreConcepts/",
+              to: "docs/introduction/coreConcepts/",
             },
           ],
         },
@@ -75,11 +75,10 @@ module.exports = {
       {
         docs: {
           // It is recommended to set document id as docs home page (`docs/` path).
-          homePageId: "gettingStarted",
+          homePageId: "introduction/getting-started",
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
-          editUrl:
-            "https://github.com/re-rxjs/react-rxjs.org/tree/master/",
+          editUrl: "https://github.com/re-rxjs/react-rxjs.org/tree/master/",
         },
         blog: {
           showReadingTime: true,
