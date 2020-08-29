@@ -41,8 +41,8 @@ const features = [
           observables
         </Link>{" "}
         enables a highly performant state propagation system based on forward
-        referencing subscriptions. It also prevents memory leaks, while it
-        provides a powerful means for handling complex caches.
+        referencing subscriptions. It also prevents memory leaks, and it can be
+        a powerful tool for dealing complex caches.
       </>
     ),
   },
