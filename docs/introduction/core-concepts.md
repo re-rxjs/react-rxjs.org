@@ -1,5 +1,5 @@
 ---
-id: coreConcepts
+id: core-concepts
 title: Core Concepts
 sidebar_label: Core Concepts
 ---
