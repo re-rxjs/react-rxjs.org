@@ -2,12 +2,11 @@
 title: Basic Todos
 ---
 
-## Capturing user inputs
+## Capturing user input
 
-The first thing that we have to do is to capture the inputs from the user. The
-user is a producer of events and we need a way to capture those events. So, let's
-create some `Subject`s for that and some functions that we can use from our
-components to capture those inputs:
+The first thing that we have to do is to capture the input from the user (yes, 
+users are also producers of events!). Let's create some `Subject`s for this, and 
+some functions that wrap the subjects, which we can use from our components:
 
 ```tsx
 import { Subject } from 'rxjs'

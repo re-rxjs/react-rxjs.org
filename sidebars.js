@@ -5,7 +5,10 @@ module.exports = {
       "introduction/core-concepts",
       "introduction/getting-started",
     ],
-    Tutorial: ["tutorial/basic"],
+    Tutorial: [
+      "tutorial/intro",
+      "tutorial/basic"
+    ],
     "API Reference": [],
   },
 };
