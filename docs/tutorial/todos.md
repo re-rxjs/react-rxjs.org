@@ -1,28 +1,45 @@
 ---
-title: Basic Todos
+title: Todos
 ---
+
+This section assumes you have installed `@react-rxjs/core` and React.
+See the [Getting Started](/docs/getting-started) page for how to get started with
+React-RxJS. Also, it's probably a good idea to have a look at the [Core Concepts](/docs/core-concepts)
+page before starting this tutorial.
+
+In this tutorial, we'll be building a simple todo-list application. Our app will
+be able to do the following:
+
+- Add todo items
+- Edit todo items
+- Delete todo items
+- Filter todo items
+- Display useful stats
+
+Along the way, we'll also introduce the `@react-rxjs/utils` package, which is a set
+of handful utilities that can come very handy when creating react apps.
 
 ## Capturing user input
 
-The first thing that we have to do is to capture the input from the user (yes, 
-users are also producers of events!). Let's create some `Subject`s for this, and 
+The first thing that we have to do is to capture the input from the user (yes,
+users are also producers of events!). Let's create some `Subject`s for this, and
 some functions that wrap the subjects, which we can use from our components:
 
 ```tsx
-import { Subject } from 'rxjs'
+import { Subject } from "rxjs";
 
-const newTodo$ = new Subject<string>()
-export const onNewTodo = (text: string) => text && newTodo.next(text)
+const newTodo$ = new Subject<string>();
+export const onNewTodo = (text: string) => text && newTodo.next(text);
 
-const editTodo$ = new Subject<{id: number, text: string}>();
+const editTodo$ = new Subject<{ id: number; text: string }>();
 export const onEditTodo = (id: number, text: string) =>
-  editTodo$.next({id, text});
+  editTodo$.next({ id, text });
 
-const toggleTodo$ = new Subject<number>()
-export const onToggleTodo = (id: number) => toggleTodo$.next(id)
+const toggleTodo$ = new Subject<number>();
+export const onToggleTodo = (id: number) => toggleTodo$.next(id);
 
-const deleteTodo$ = new Subject<number>()
-export const onDeleteTodo = (id: number) => deleteTodo.next(id)
+const deleteTodo$ = new Subject<number>();
+export const onDeleteTodo = (id: number) => deleteTodo.next(id);
 ```
 
 ## Creating a stream for all the events
@@ -106,5 +123,5 @@ more convenient to have an Observable of a `Map<number, Todo>`, and that's
 exactly what the `collectValues` operator does:
 
 ```ts
-const todosMap$: Observable<Map<number, Todo>> = todos$.pipe(collectValues())
+const todosMap$: Observable<Map<number, Todo>> = todos$.pipe(collectValues());
 ```
