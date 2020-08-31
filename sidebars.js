@@ -6,8 +6,8 @@ module.exports = {
       "core-concepts",
     ],
     Tutorial: [
-      "tutorial/intro",
-      "tutorial/basic"
+      "tutorial/github-issues",
+      "tutorial/todos"
     ],
     "API Reference": [
       {
