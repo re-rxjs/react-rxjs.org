@@ -6,17 +6,17 @@ sidebar_label: Core Concepts
 
 ## Push vs Pull
 
-Historically, React uses a **pull**-based architecture. This means that when react needs to re-render, it will call the render function of every affected component, which will return a new representation of the UI, so React can reconcile with the previous one to propagate the changes to the DOM.
+Historically, React uses a **pull**-based architecture. This means that when React needs to re-render, it will call the render function of every affected component. This will return a new representation of the UI, which React can reconcile with the previous one. Any changes are then propogated to the DOM.
 
-This kind of behavior is called _pull_ because the consumer (in this case, React consumes the UI representation), is the one that _requests_ the new value.
+This kind of behavior is called _pull_ because the consumer (in this case, React), is the one that _requests_ the new value.
 
 On the other hand, RxJS uses a **push**-based approach, where you declaratively define streams and their relationships, and RxJS will propagate every change from one stream to the next one.
 
-This is called _push_ because now the producer of the state is the responsible of _handing_ the new value over to those that depend on it. This has a positive effect: only those entities that depend on a value that has changed will update, without needing to make comparisons with the previous value to catch what parts have changed.
+This is called _push_ because now the producer of the state is responsible for _handing_ the new value over to those that depend on it. This has a positive effect: only those entities that depend on the value that has changed will update, and it can be done without having to make comparisons or detect changes.
 
-This in turn not only improves performance, but also makes the state management more declarative, and in a way that can be read top-to-bottom.
+Not only can this approach significantly improve performance, it also makes state management more declarative, in a way that can be read top-to-bottom.
 
-React-RxJS bridges the gap between these two behaviors, making it possible to declare a _push_ based application state that works flawlessly with React.
+React-RxJS bridges the gap between these two behaviors, making it possible to declare a _push_-based application state that works flawlessly with _pull_-based React.
 
 ## Streams as state
 
@@ -55,9 +55,9 @@ setTimeout(() => {
 // Will continue with B1... A3... B2... A4
 ```
 
-This in a way makes might make sense because you might want to have a different state for each subscription, however, this doesn't play nicely with React. In React, you have different components, and they all need to receive the same value. Moreover, if that value dispatches a call to a service, you'd only want to make one single call to be shared among all of the components.
+This makes sense because you might want to have a different state for each subscription. However, this doesn't play nicely with React. In React, you have different components, and they all need to receive the same value. Moreover, if that value dispatches a call to a service, you'd only want to make one single call to be shared among all of the components.
 
-RxJS has an operator that helps with this, `share`:
+RxJS has an operator that helps with this, called `share`:
 
 ```ts
 import { interval } from "rxjs";
@@ -76,13 +76,13 @@ setTimeout(() => {
 
 The technical term for this is that `share` _multicasts_ the stream, so that it only makes one subscription to the source, and will propagate every change to all the subscriptions of the shared stream.
 
-However, this now has a different issue for React's use case: If you look closely in the last snippet, even though `"B"` subscribed when the last value of the stream was `2`, it didn't receive that value. And it makes sense because the change to `2` was emitted in the past, so it didn't receive that change because it subscribed later.
+However, this now has a different issue for React's use case: If you look closely at the last snippet, even though `"B"` subscribed when the last value of the stream was `2`, it didn't receive that value. And it makes sense because the change to `2` was emitted in the past - `"B"` didn't receive that change because it subscribed later.
 
-As React is _pull_ based, it needs access to the latest value emitted from the stream when it needs to re-render. With the current model, it would have to wait until a new change is emitted in the stream before it can receive the new state, which wouldn't really work. Here's when React-RxJS comes into play.
+As React is _pull_-based, it needs access to the latest value emitted from the stream when it needs to re-render. With the current model, it would have to wait until a new change is emitted in the stream before it can receive the new state, which wouldn't really work. Here's where React-RxJS comes into play.
 
-RxJS has another operator `shareReplay` which would cover this issue. However, it doesn't play nicely with the way that React works, because when the source completes it will keep the last values in memory indefinitely, and replay them back when a new subscriber comes without re-subscribing to the source. This not only exposes a possible memory leak, but also makes it impossible to replay e.g. a fetch call once it has already resolved.
+RxJS has another operator `shareReplay` which would cover this issue. However, it doesn't play nicely with the way that React works: when the source completes it will keep the last values in memory indefinitely, and replay it back when a new subscription is made, without re-subscribing to the source. This not only exposes a possible memory leak, but also makes it impossible to replay e.g. a fetch call once it has already resolved.
 
-So that's why React-RxJS exports `shareLatest`. In essence, it addresses the issue of sharing the state between many components and keeping always the latest value, but without the additional issues that `shareReplay` exposes for this particular use case. So now our example would become:
+So that's why React-RxJS provides `shareLatest`. In essence, it addresses the issue of sharing the state between many components and keeping always the latest value, but without the additional issues that `shareReplay` exposes for this particular use case. So with React-RxJS our example would become:
 
 ```ts
 import { interval } from "rxjs";
@@ -100,17 +100,17 @@ setTimeout(() => {
 // Will continue with B2... A3 B3... A4 B4...
 ```
 
-Now this stream would be ready to be consumed by React. `shareLatest` in a way turns a stream into a state entity. Something that owns a current value, while also providing a way to subscribe for future changes.
+Now this stream would be ready to be consumed by React. `shareLatest` in a way turns a stream into a state entity. Something that owns a current value, while also providing a way to subscribe to future updates.
 
-The main function of React-RxJS, `bind`, uses this operator on every stream. `bind` is the function you need to use to get a React hook that will receive that value. This function not only adds `shareLatest` to the stream, but also does a few more tricks to integrate with React, such as:
+The main function of React-RxJS, `bind`, uses this operator on every stream. `bind` is the function you need to use to get a React hook that will receive that value. This function not only adds `shareLatest` to the stream, but also applies a few more tricks to integrate with React, such as:
 
 - Leveraging Suspense, so that you can represent loading states from the streams.
-- Leveraging Error Boundaries to allow graceful error recoveries.
+- Leveraging Error Boundaries to allow graceful error recovery.
 - Performance optimizations, making sure React doesn't update when it doesn't need to.
 - Manages a cache of parametric observables (when using the factory overload).
-- Delays unsubscriptions from hooks to keep the stream alive between rerenders.
+- Delays unsubscriptions from hooks to keep the stream alive between re-renders.
 
-If we use bind instead, our example will look like:
+If we use bind instead, our example will become:
 
 ```ts
 import { interval } from "rxjs";
@@ -183,9 +183,9 @@ const [useTodoList, todoList$] = bind(
 
 And now the "TodoForm" component can directly call `postNewTodo` whenever the user creates a todo, and the change will be propagated down to the list.
 
-Keep in mind that `bind` doesn't do magic. If no one is subscribed to `todoList$` (not even from the hook) then that stream won't be listening for changes on `newTodos` subject, and if a subscription happens late, the subject won't replay the todos created so they would get lost.
+Keep in mind that `bind` doesn't do magic. If no one is subscribed to `todoList$` (not even from the hook) then that stream won't be listening for changes on `newTodos` subject, and if a subscription happens late, the subject won't replay the todos created, so they would get lost.
 
-Remember, if you have a case like this (where you are pushing a Subject but no one is subscribed to those changes), make sure you have an active subscription to the stream by using `<Subscribe source$={stream} />` or `useSubscribe(stream)`. This way, `todoList$` will update when a new value is pushed to the subject, and the result will be replayed for every new subscriber that comes later on.
+Remember, if you have a case like this (where you are pushing a Subject but no one is subscribed to those changes), make sure you have an active subscription to the stream by using `<Subscribe source$={stream} />` or `useSubscribe(stream)`. This way, `todoList$` will update when a new value is pushed to the subject, and the result will be replayed for every new subscriber that arrives later.
 
 ## Suspense
 
@@ -202,9 +202,9 @@ You might be wondering - how does this _exactly_ work with React? If React is pu
 
 Well, React added a feature called Suspense. With Suspense, we can represent values that are not yet ready, and we can notify React when those values have been loaded.
 
-`react-rxjs` comes with full support with Suspense, and it treats it as a first-class citizen. This means that by default, using a hook from a stream that hasn't emitted any value will result in that hook suspending the Component.
+`react-rxjs` comes with full support for Suspense, and it treats it as a first-class citizen. This means that by default, using a hook from a stream that hasn't emitted any value will result in that hook suspending the component.
 
-Note that for this to work properly, you need to have proper Suspense boundaries throughout your component tree. If you don't want to use Suspense just yet the solution is simple: Make sure that the stream always has a value. In our example, if we decide that `null` represents missing values, the solution is as simple as:
+Note that for this to work properly, you need to have proper Suspense boundaries throughout your component tree. If you don't want to use Suspense just yet, the solution is simple: Make sure that the stream always has a value. In our example, if we decide that `null` represents missing values, the solution is as simple as:
 
 ```ts
 import { ajax } from "rxjs/ajax";
@@ -216,11 +216,11 @@ const [usePost, post$] = bind((id: string) =>
 );
 ```
 
-Now `usePost` will emit `null` immediately while it's fetching data (so that we can manually handle that) instead of suspending the component, and when the ajax call is resolved it will emit the result of that call.
+Now `usePost` will emit `null` immediately while it's fetching data (so that we can manually handle that), instead of suspending the component, and when the ajax call is resolved, it will emit the result of that call.
 
-Back to using React's Suspense, there's another way to suspend a component with `react-rxjs` than in the initial call: You can suspend a stream anytime by emitting `SUSPENSE`. For instance, this can come in handy if you need to refresh the data because some filter have changed.
+When using Suspense, however, there's also another way to suspend a component with `react-rxjs`: by emitting `SUSPENSE`. For example, this can come in handy if you need to refresh the data because some filter has changed.
 
-There's something to keep in mind though: React Suspense works in series within a Component. Imagine this example:
+There's something to keep in mind though: React Suspense works in a serialized way within a Component. Imagine this example:
 
 ```tsx
 const UserProfile = () => {
@@ -238,7 +238,7 @@ const UserProfile = () => {
 
 In this case, because of the way that Suspense works, these fetches will happen in sequential order. This means that initially `useUserDetails` will subscribe to `userDetails$`, which will start fetching data and suspend the component. When the fetch call resolves, `useUserDetails` will "resume" the component, and `useUserPosts` will run, subscribing and fetching the data, and suspending the component yet again.
 
-This is usually a code smell. If you need to use many react-rxjs hooks in a component that each one will do some asynchronous work, it's often better to move this logic in a separate stream (and hook) by using composition:
+This is usually a code smell. If you need to use many react-rxjs hooks in a component, each of which will do some asynchronous work, it's often better to move this logic into a single stream (and hook) by using composition:
 
 ```ts
 const [useUserDetailsAndPosts] = bind(combineLatest(userDetail$, userPosts$));
@@ -246,4 +246,4 @@ const [useUserDetailsAndPosts] = bind(combineLatest(userDetail$, userPosts$));
 
 Now `useUserDetailsAndPosts` will start fetching both resources and suspend the component just once for both of them.
 
-However, in this particular example, it would make more sense a different solution. Note that `UserProfile` is not using any of `details` or `posts`, so we can move the usage of those two hooks down into the components that actually use them, `<UserDetails />` and `<UserPosts />`. This way, react will render both components, and both of them will suspend at the same time, while also subscribing to both streams simultaneously.
+However, in this particular example, there is an even better solution. Note that `UserProfile` is not using `details` or `posts` directly, so we can move the usage of those two hooks down into the components that actually use them, `<UserDetails />` and `<UserPosts />`. This way, React will render both components, and both of them will suspend at the same time, while also subscribing to both streams simultaneously.
