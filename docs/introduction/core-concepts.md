@@ -246,7 +246,6 @@ const [useUserDetailsAndPosts] = bind(combineLatest(userDetail$, userPosts$));
 
 Now `useUserDetailsAndPosts` will start fetching both resources and suspend the component just once for both of them.
 
-
 However, in this particular example, there is an even better solution. Note that `UserProfile` is not using `details` or `posts` directly, so we can move the usage of those two hooks down into the components that actually use them, `<UserDetails />` and `<UserPosts />`. This way, React will render both components, and both of them will suspend at the same time, while also subscribing to both streams simultaneously.
 
 ## Error boundaries
