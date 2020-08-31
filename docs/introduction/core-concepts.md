@@ -309,4 +309,4 @@ In here, `useTimedBomb` will start counting from 0 and emit an `error` in the 3r
 
 When a rxjs stream emits an error, the stream gets immediately closed. This way, if our strategy to recover from the error is to try again, when `Bomb` resubscribes to the stream it will create a new subscription and start over again.
 
-In this case, after 3 seconds it will throw an error again, but in a real-world case this might be different, and you might need different recovery strategies depending on each case. `react-error-boundary` helps by providing a declarative way to define this strategies.
+In this case, after 3 seconds it will throw an error again, but in a real-world case this might be different, and you might need different recovery strategies depending on each case. `react-error-boundary` helps by providing a declarative way to define these strategies.
