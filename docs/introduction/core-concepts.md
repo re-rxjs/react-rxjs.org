@@ -252,7 +252,7 @@ However, in this particular example, it would make more sense a different soluti
 
 React 16 added the concept of Error Boundaries: A way to catch errors in the component tree and show a fallback UI so it can be recovered from.
 
-React-RxJS is mindful of these, in a way that if one of the stream emits an error, the components that are subscribed to that stream will propagate that error to the nearest Error Boundary.
+React-RxJS is mindful of these, in a way that if one of the streams emits an error, the components that are subscribed to that stream will propagate that error to the nearest Error Boundary.
 
 We recommend creating Error Boundaries with [react-error-boundary](https://github.com/bvaughn/react-error-boundary), because it creates a good abstraction to build them, by declaring a fallback component and recovery strategy, in a similar way to Suspense Boundaries.
 
