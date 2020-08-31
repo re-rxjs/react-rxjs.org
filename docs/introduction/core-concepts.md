@@ -247,3 +247,66 @@ const [useUserDetailsAndPosts] = bind(combineLatest(userDetail$, userPosts$));
 Now `useUserDetailsAndPosts` will start fetching both resources and suspend the component just once for both of them.
 
 However, in this particular example, it would make more sense a different solution. Note that `UserProfile` is not using any of `details` or `posts`, so we can move the usage of those two hooks down into the components that actually use them, `<UserDetails />` and `<UserPosts />`. This way, react will render both components, and both of them will suspend at the same time, while also subscribing to both streams simultaneously.
+
+## Error boundaries
+
+React 16 added the concept of Error Boundaries: A way to catch errors in the component tree and show a fallback UI so it can be recovered from.
+
+React-RxJS is mindful of these, in a way that if one of the streams emits an error, the components that are subscribed to that stream will propagate that error to the nearest Error Boundary.
+
+We recommend creating Error Boundaries with [react-error-boundary](https://github.com/bvaughn/react-error-boundary), because it creates a good abstraction to build them, by declaring a fallback component and recovery strategy, in a similar way to Suspense Boundaries.
+
+Let's take a look at an example:
+
+```tsx
+import { bind } from "@react-rxjs/core";
+import { interval } from "rxjs";
+import { map, startWith } from "rxjs/operators";
+import { ErrorBoundary } from "react-error-boundary";
+
+const [useTimedBomb] = bind(
+  interval(1000).pipe(
+    map((v) => v + 1),
+    startWith(0),
+    map((v) => {
+      if (v === 3) {
+        throw new Error("boom");
+      }
+      return v;
+    })
+  )
+);
+
+function Bomb() {
+  const time = useTimedBomb();
+
+  return <div>{time}</div>;
+}
+
+function ErrorFallback({ error, componentStack, resetErrorBoundary }) {
+  return (
+    <div>
+      <p>Something went wrong:</p>
+      <pre>{error?.message}</pre>
+      <pre>{componentStack}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div className="App">
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <Bomb />
+      </ErrorBoundary>
+    </div>
+  );
+}
+```
+
+In here, `useTimedBomb` will start counting from 0 and emit an `error` in the 3rd second. React-RxJS ensures that this error will be caught in the ErrorBoundary defined for the component that's using this stream, so the fallback UI will be shown.
+
+When a rxjs stream emits an error, the stream gets immediately closed. This way, if our strategy to recover from the error is to try again, when `Bomb` resubscribes to the stream it will create a new subscription and start over again.
+
+In this case, after 3 seconds it will throw an error again, but in a real-world case this might be different, and you might need different recovery strategies depending on each case. `react-error-boundary` helps by providing a declarative way to define these strategies.
