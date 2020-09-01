@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[5],{140:function(o){o.exports=JSON.parse('{"allTagsPath":"/react-rxjs.org/blog/tags","slug":"facebook","name":"facebook","count":1,"permalink":"/react-rxjs.org/blog/tags/facebook"}')}}]);
