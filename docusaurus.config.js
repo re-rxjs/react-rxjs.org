@@ -15,9 +15,15 @@ module.exports = {
       },
       items: [
         {
-          to: "docs/",
+          to: "docs/getting-started",
           activeBasePath: "docs",
           label: "Docs",
+          position: "left",
+        },
+        {
+          to: "docs/tutorial/intro",
+          activeBasePath: "docs",
+          label: "Tutorial",
           position: "left",
         },
         {
@@ -35,11 +41,15 @@ module.exports = {
           items: [
             {
               label: "Getting Started",
-              to: "docs/",
+              to: "docs/getting-started/",
             },
             {
               label: "Core Concepts",
-              to: "docs/introduction/core-concepts/",
+              to: "docs/core-concepts/",
+            },
+            {
+              label: "API Reference",
+              to: "docs/api/core/bind/",
             },
           ],
         },

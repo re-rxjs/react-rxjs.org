@@ -1,7 +1,5 @@
 ---
-id: self-dependant
 title: selfDependant()
-sidebar_label: selfDependant()
 ---
 
 A creation operator that helps creating observables that have circular

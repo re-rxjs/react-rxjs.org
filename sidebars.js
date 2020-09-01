@@ -1,9 +1,9 @@
 module.exports = {
   someSidebar: {
     Introduction: [
-      "introduction/getting-started",
-      "introduction/motivation",
-      "introduction/core-concepts",
+      "getting-started",
+      "motivation",
+      "core-concepts",
     ],
     Tutorial: [
       "tutorial/intro",
@@ -16,9 +16,9 @@ module.exports = {
         "items": [
 
           "api/core/bind",
-          "api/core/share-latest",
+          "api/core/shareLatest",
           "api/core/suspense",
-          "api/core/use-subscribe",
+          "api/core/useSubscribe",
           "api/core/subscribe",
         ]
       },
@@ -27,13 +27,13 @@ module.exports = {
         "label": "Utils",
         "items": [
           "api/utils/collect",
-          "api/utils/collect-values",
-          "api/utils/merge-with-key",
-          "api/utils/self-dependant",
+          "api/utils/collectValues",
+          "api/utils/mergeWithKey",
+          "api/utils/selfDependant",
           "api/utils/split",
           "api/utils/suspend",
           "api/utils/suspended",
-          "api/utils/switch-map-suspended",
+          "api/utils/switchMapSuspended",
         ]
       }
     ],

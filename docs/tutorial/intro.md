@@ -3,8 +3,8 @@ title: Intro
 ---
 
 This section assumes you have installed `@react-rxjs/core` and React.
-See the [Getting Started](/docs/gettingStarted) page for how to get started with
-React-RxJS. Also, it's probably a good idea to have a look at the [Core Concepts](/docs/coreConcepts)
+See the [Getting Started](/docs/getting-started) page for how to get started with
+React-RxJS. Also, it's probably a good idea to have a look at the [Core Concepts](/docs/core-concepts)
 page before starting this tutorial.
 
 In this tutorial, we'll be building a simple todo-list application. Our app will

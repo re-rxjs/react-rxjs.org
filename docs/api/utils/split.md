@@ -1,7 +1,5 @@
 ---
-id: split
 title: split()
-sidebar_label: split()
 ---
 
 A RxJS operator that groups the items emitted by the source based on the

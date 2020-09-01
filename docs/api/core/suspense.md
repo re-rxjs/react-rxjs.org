@@ -1,7 +1,5 @@
 ---
-id: suspense
 title: SUSPENSE
-sidebar_label: SUSPENSE
 ---
 
 `SUSPENSE` is a special symbol that can be emitted from observables to let the react hook
