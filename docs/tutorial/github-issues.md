@@ -4,6 +4,7 @@ title: Github Issues example
 
 For this tutorial we will be borrowing the [Github issues example that it's taught
 on the Advanced Tutorial of the Redux Toolkit](https://redux-toolkit.js.org/tutorials/advanced-tutorial).
+
 It's a great example because it starts with a plain React application and it then
 teaches how to migrate that application to Redux using the RTK. One of the many good
 things about that tutorial is that it teaches the reader the mental models that RTK
@@ -33,15 +34,14 @@ Let's start by viewing the original plain React app in action:
 It's worth noting that there are a couple of tiny bugs (or annoyances) with this React implementation:
 
 - Changing the "Issues Page" number and jumping to that page updates the highlighted
-pagination number that's on the footer. However, changing the pagination number through
-the footer does not update the pagination number at the top.
+  pagination number that's on the footer. However, changing the pagination number through
+  the footer does not update the pagination number at the top.
 
 - When the user loads a different repo, the issues page doesn't go back to the first one,
-which is problematic because if the user was looking at page 5 of the initial repo
-and then tries to go to a different repo which doesn't have as many pages, then 
-the results don't load properly. We think that it would be desirable to go back
-to the first page whenever the the user loads a different repo
-
+  which is problematic because if the user was looking at page 5 of the initial repo
+  and then tries to go to a different repo which doesn't have as many pages, then
+  the results don't load properly. We think that it would be desirable to go back
+  to the first page whenever the the user loads a different repo
 
 We will be addressing these issues as we migrate the initial code to react-rxjs.
 
@@ -61,12 +61,13 @@ The codebase is already laid out in a "feature folder" structure, The main piece
 ### Changing the dependencies
 
 For this tutorial we will need the following dependencies:
+
 - `rxjs`: since these are bindings for RxJS :smile:
 - `@react-rxjs/core`: the core package of React-RxJS
 - `react-error-boundary`: React-RxJS integrates very nicely with React Error
-Boundaries. `react-error-boundary` is a tiny library that provides a nice
-abstraction to build them, by declaring a fallback component and recovery strategy,
-in a similar way to Suspense Boundaries. 
+  Boundaries. `react-error-boundary` is a tiny library that provides a nice
+  abstraction to build them, by declaring a fallback component and recovery strategy,
+  in a similar way to Suspense Boundaries.
 
 Also we are not going to need Axios, because we will be using `rxjs/ajax` instead.
 
@@ -83,13 +84,13 @@ of Axios. It's a pretty straightforward change:
  import parseLink, { Links } from 'parse-link-header'
 +import { map, pluck } from 'rxjs/operators'
 +import { Observable } from 'rxjs'
- 
+
  export interface Label {
    id: number
 @@ -64,47 +66,40 @@ const getPageCount = (pageLinks: Links) => {
    }
  }
- 
+
 -export async function getIssues(
 +export function getIssues(
    org: string,
@@ -133,7 +134,7 @@ of Axios. It's a pretty straightforward change:
 +    })
 +  )
  }
- 
+
 -export async function getRepoDetails(org: string, repo: string) {
 +export function getRepoOpenIssuesCount(org: string, repo: string) {
    const url = `https://api.github.com/repos/${org}/${repo}`
@@ -142,7 +143,7 @@ of Axios. It's a pretty straightforward change:
 -  return data
 +  return ajax.getJSON<RepoDetails>(url).pipe(pluck('open_issues_count'))
  }
- 
+
 -export async function getIssue(org: string, repo: string, number: number) {
 +export function getIssue(org: string, repo: string, number: number) {
    const url = `https://api.github.com/repos/${org}/${repo}/issues/${number}`
@@ -151,7 +152,7 @@ of Axios. It's a pretty straightforward change:
 -  return data
 +  return ajax.getJSON<Issue>(url)
  }
- 
+
 -export async function getComments(url: string) {
 -  const { data } = await axios.get<Comment[]>(url)
 -  return data
@@ -164,7 +165,7 @@ of Axios. It's a pretty straightforward change:
 
 Now that we have everything ready, let's think for a moment about the state of
 this App. Luckily for us, there is not a lot of it. So, let's represent the different
-state entities and their relations on a diagram:
+state entities and their relations on a diagram:
 
 <img src="/static/img/github-issues-dependencies.png"
 alt="A diagram that represents the relations of the entities, at the top we have the user inputs
@@ -172,6 +173,7 @@ followed by those states that depend on them directly and one level below we hav
 that depend on other states" />
 
 At the very top we have the different events that can happen. The 3 different user interactions:
+
 - Changing the repo
 - Changing the page
 - selecting / unselecting an issue
@@ -179,9 +181,10 @@ At the very top we have the different events that can happen. The 3 different us
 These are the events that will propagate changes to our state entities.
 
 Then we have the following state entities:
+
 - **"Current repo & page"**: since the page and the repo are very tightly coupled, it makes
-sense to have an entity that represents the current state of the both of them. This entity
-depends on 2 different user interactions: changing the repo and changing the page.
+  sense to have an entity that represents the current state of the both of them. This entity
+  depends on 2 different user interactions: changing the repo and changing the page.
 
 - From this entity we can easily derive the **"list of issues"** and the **"current page"**
 
@@ -193,7 +196,6 @@ depends on 2 different user interactions: changing the repo and changing the pag
 
 That's it. That's all the App-level state. It's worth pointing out that the UI
 doesn't allow the user to change the repo or the page while there is a selected issue.
-
 
 ## Defining the state of the App
 
@@ -211,8 +213,8 @@ pieces and to collocate each piece closer to where it is being used, though.
 Let's first define and export the default states of the App:
 
 ```ts
-export const INITIAL_ORG = 'rails'
-export const INITIAL_REPO = 'rails'
+export const INITIAL_ORG = "rails"
+export const INITIAL_REPO = "rails"
 ```
 
 Next, let's create the entry points for the user interactions:
@@ -238,7 +240,7 @@ export const onIssueUnselecteed = () => {
 ```
 
 Now that we already have the top-level streams, let's create a stream that represents
-the "current repo and page" entity:
+the "current repo and page" entity. We want to reset the page to 1 when the selected repo changes, so we can represent this behavior with `merge`:
 
 ```ts
 export const [useCurrentRepo, currentRepo$] = bind(
@@ -246,76 +248,104 @@ export const [useCurrentRepo, currentRepo$] = bind(
     startWith({
       org: INITIAL_ORG,
       repo: INITIAL_REPO,
-    })
-  )
+    }),
+  ),
 )
 
 const currentRepoAndPage$ = merge(
+  // When repo changes, update repo and reset page to 1
   repoSubject$.pipe(
     map((currentRepo) => ({
       ...currentRepo,
       page: 1,
-    }))
+    })),
   ),
+  // When page changes
   pageSelected$.pipe(
     filter((page) => page > 0),
+    // keep same repo, update page
     withLatestFrom(currentRepo$),
-    map(([page, repo]) => ({ ...repo, page }))
-  )
+    map(([page, repo]) => ({ ...repo, page })),
+  ),
 ).pipe(shareLatest())
 ```
 
-And the current page:
+From this stream we can extract the current page
 
 ```ts
-export const [useCurrentPage] = bind(currentRepoAndPage$.pipe(pluck('page')))
+export const [useCurrentPage] = bind(currentRepoAndPage$.pipe(pluck("page")))
 ```
 
-And the issues:
+And following our model, the list of issues also depends on this stream, but the
+list of issues needs to be loaded from the API.
+
+In this example we also want to use React's Suspense: When the user changes repo
+or page, while the new issue list is loading we want to show a suspended state
+(i.e. "Loading issues..."). The way we can do this, is by emitting the
+`SUSPENSE` symbol, that means that there's data being loaded in this stream.
+This can be expressed reactively as:
 
 ```ts
 export const [useIssues] = bind(
   currentRepoAndPage$.pipe(
-    switchMapSuspended(({ page, repo, org }) => getIssues(org, repo, page))
-  )
+    switchMap(({ page, repo, org }) =>
+      getIssues(org, repo, page).pipe(startWith(SUSPENSE)),
+    ),
+  ),
 )
 ```
 
-Number of open issues:
+This way every time the current repo or page changes, useIssues will send
+another query to the API to keep everything up-to-date, suspending the
+component(s) that depend on it while it's fetching the new values.
+
+We can use the same pattern to retrieve the number of open issues:
 
 ```ts
 export const [usepenIssuesLen] = bind(
   currentRepo$.pipe(
-    switchMapSuspended(({ org, repo }) => getRepoOpenIssuesCount(org, repo))
-  )
+    switchMap(({ org, repo }) =>
+      getRepoOpenIssuesCount(org, repo).pipe(startWith(SUSPENSE)),
+    ),
+  ),
 )
 ```
 
+And lastly we need to declare the state for when an issue is selected: Following
+a similar logic, we need to load the issue details when an issue is selected,
+and its comments.
+
 ```ts
 export const [useSelectedIssueId, selectedIssueId$] = bind(
-  issueSelected$.pipe(startWith(null))
+  issueSelected$.pipe(startWith(null)),
 )
 
 export const [useIssue, issue$] = bind(
   selectedIssueId$.pipe(
     filter((id): id is number => id !== null),
     withLatestFrom(currentRepo$),
-    switchMapSuspended(([id, { org, repo }]) => getIssue(org, repo, id))
-  )
+    switchMap(([id, { org, repo }]) =>
+      getIssue(org, repo, id).pipe(startWith(SUSPENSE)),
+    ),
+  ),
 )
 
 export const [useIssueComments] = bind(
   issue$.pipe(
     filter((issue): issue is Issue => issue !== SUSPENSE),
-    pluck('comments_url'),
-    switchMapSuspended(getComments)
-  )
+    switchMap(issue => getComments(issue.comments_url).pipe(startWith(SUSPENSE)),
+  ),
 )
 ```
 
+As this pattern of `switchMap` and `startWith(SUSPENSE)` is something that's
+often used, react-rxjs exports `switchMapSuspended` in `@react-rxjs/utils` that
+makes it sightly less verbose.
+
 ## Wiring things up!
 
-Now that we already have all the things that we nee...
+Now that we already have all the application state declared, we can wire it up
+with the components.
 
 ### Main App Component
 
@@ -323,15 +353,12 @@ The [diff of this component is so brutal](https://github.com/re-rxjs/react-rxjs-
 that it's best to show how the code looks with react-rxjs:
 
 ```tsx
-import React, { Suspense, lazy } from 'react'
-import './App.css'
-import { RepoSearchForm } from 'features/repoSearch/RepoSearchForm'
-import { IssuesListPage } from 'features/issuesList/IssuesListPage'
-import { useSelectedIssueId } from 'state'
-
-const IssueDetailsPage = lazy(
-  () => import('features/issueDetails/IssueDetailsPage')
-)
+import React, { Suspense, lazy } from "react"
+import "./App.css"
+import { RepoSearchForm } from "features/repoSearch/RepoSearchForm"
+import { IssuesListPage } from "features/issuesList/IssuesListPage"
+import { IssuesDetailsPage } from "features/issueDetails/IssueDetailsPage"
+import { useSelectedIssueId } from "state"
 
 const List: React.FC = () => {
   const id = useSelectedIssueId()
@@ -357,7 +384,15 @@ const App: React.FC = () => {
 export default App
 ```
 
+With Suspense, we don't need to manage the loading states by ourselves - React
+will. This added to the fact that the state is lifted out lets the original
+App to be simplified to a couple of simple components.
+
 ### RepoSearchForm
+
+For the "search repository" form, by having the state in a separate file, we can
+just import those bits that we need directly and this way the parent doesn't
+need to get coupled to values that it doesn't need.
 
 ```diff
 -import React, { useState, ChangeEvent } from 'react'
@@ -421,15 +456,30 @@ export default App
 
 ### IssuesListPage
 
-```tsx
-import React, { useEffect } from 'react'
-import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
+The page for the list of issues is also [greatly simplified](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/459298bf23421b0ef1b5e760fe450fb3a6b72797#diff-86b21025fd105e75d28d28541f8288b5),
+because all the state management on this part is already done, and it turns out
+that this component is not the consumer of any of the state it managed - The
+consumers are their children, which they will access whatever they need.
 
-import { IssuesPageHeader } from './IssuesPageHeader'
-import { IssuesList } from './IssuesList'
-import { IssuePagination } from './IssuePagination'
-import { currentRepoAndPage$ } from 'state'
-import { skip, take } from 'rxjs/operators'
+This component still has a responsibility though: to catch any error that would
+happen on fetch and show a fallback UI. React-RxJS lets us use ErrorBoundaries,
+not only for the regular errors that happen within React's Components, but also
+for those errors that are generated in a stream.
+
+What will happen is that if a component uses a stream that emits an error, it
+will propagate that error to the nearest error boundary. If that happens, the
+Error Boundary will show the fallback UI, and we can decide how to recover. In
+our case, we want to show the components when the user selects another
+repository or another page, so we can set this up easily by using a `useEffect`.
+
+```tsx
+import React, { useEffect } from "react"
+import { ErrorBoundary, FallbackProps } from "react-error-boundary"
+import { IssuesPageHeader } from "./IssuesPageHeader"
+import { IssuesList } from "./IssuesList"
+import { IssuePagination } from "./IssuePagination"
+import { currentRepoAndPage$ } from "state"
+import { skip, take } from "rxjs/operators"
 
 const OnError: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
   useEffect(() => {
@@ -461,11 +511,15 @@ export const IssuesListPage = () => {
 
 #### IssuesPageHeader
 
+For the header, we can get rid of its props (as now it's state we already have
+declared), and we will also take the chance to represent the loading state by
+using React's Suspense.
+
 ```diff
 -import React from 'react'
 +import React, { Suspense } from 'react'
 +import { useCurrentRepoOpenIssuesCount, useCurrentRepo } from 'state'
- 
+
 -interface OrgProps {
 -  org: string
 -  repo: string
@@ -484,7 +538,7 @@ export const IssuesListPage = () => {
 @@ -23,24 +16,23 @@ function OrgRepo({ org, repo }: OrgProps) {
    )
  }
- 
+
 -export function IssuesPageHeader({
 -  openIssuesCount = -1,
 -  org,
@@ -529,22 +583,20 @@ export const IssuesListPage = () => {
 
 #### IssuePagination
 
+Same logic applies for the pagination component:
+
 ```diff
 -import React from 'react'
 +import React, { Suspense } from 'react'
  import classnames from 'classnames'
 -import Paginate, { ReactPaginateProps } from 'react-paginate'
 +import Paginate from 'react-paginate'
- 
+
  import styles from './IssuePagination.module.css'
  import './IssuePagination.css'
 +import { useCurrentPage, useIssues, onPageChange } from 'state'
- 
+
 -export type OnPageChangeCallback = ReactPaginateProps['onPageChange']
-+const IssuePaginationLoaded = () => {
-+  const currentPage = useCurrentPage() - 1
-+  const { pageCount } = useIssues()
- 
 -interface Props {
 -  currentPage: number
 -  pageCount: number
@@ -556,6 +608,10 @@ export const IssuesListPage = () => {
 -  pageCount,
 -  onPageChange,
 -}: Props) => {
++const IssuePaginationLoaded = () => {
++  const currentPage = useCurrentPage() - 1
++  const { pageCount } = useIssues()
+
 -  return (
 +  return pageCount === 0 ? null : (
      <div className={classnames('issuesPagination', styles.pagination)}>
@@ -582,16 +638,18 @@ export const IssuesListPage = () => {
 
 #### IssuesList
 
+And the list:
+
 ```diff
 -import React from 'react'
 +import React, { Suspense } from 'react'
- 
+
 -import { Issue } from 'api/githubAPI'
  import { IssueListItem } from './IssueListItem'
- 
+
  import styles from './IssuesList.module.css'
 +import { useIssues } from 'state'
- 
+
 -interface Props {
 -  issues: Issue[]
 -  showIssueComments: (issueId: number) => void
@@ -606,7 +664,7 @@ export const IssuesListPage = () => {
 +      <IssueListItem {...issue} />
      </li>
    ))
- 
+
    return <ul className={styles.issuesList}>{renderedIssues}</ul>
  }
 +
@@ -617,23 +675,38 @@ export const IssuesListPage = () => {
 +)
 ```
 
+When react renders `IssuesListLoaded`, it will call `useIssues()`,
+which internally will subscribe to the stream, and start fetching the value
+from GitHub's API. As that value won't be resolved immediately, the component
+will be put in Suspense until we get a response back from the server.
+
+At that point, the component will exit suspense and `issues` will have
+the value expected.
+
+Then, when the user changes to another repo or page, `useIssues()` will put
+the component in Suspense again until the new request has loaded.
+
 ### IssueDetailsPage
 
+In here, also by using Error boundaries and suspense, we can break down this
+component into smaller ones. There are [too many changes](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/459298bf23421b0ef1b5e760fe450fb3a6b72797#diff-1a799039b78ec6f0b5ab3f324755c673)
+to be able to follow this, but the result would be:
+
 ```tsx
-import React, { Suspense } from 'react'
-import ReactMarkdown from 'react-markdown'
-import classnames from 'classnames'
+import React, { Suspense } from "react"
+import ReactMarkdown from "react-markdown"
+import classnames from "classnames"
 
-import { insertMentionLinks } from 'utils/stringUtils'
-import { IssueLabels } from 'components/IssueLabels'
+import { insertMentionLinks } from "utils/stringUtils"
+import { IssueLabels } from "components/IssueLabels"
 
-import { IssueMeta } from './IssueMeta'
-import { IssueComments } from './IssueComments'
+import { IssueMeta } from "./IssueMeta"
+import { IssueComments } from "./IssueComments"
 
-import styles from './IssueDetailsPage.module.css'
-import './IssueDetailsPage.css'
-import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
-import { onIssueUnselecteed, useIssue, useSelectedIssueId } from 'state'
+import styles from "./IssueDetailsPage.module.css"
+import "./IssueDetailsPage.css"
+import { ErrorBoundary, FallbackProps } from "react-error-boundary"
+import { onIssueUnselecteed, useIssue, useSelectedIssueId } from "state"
 
 const Comments: React.FC = () => {
   const { comments } = useIssue()
@@ -659,7 +732,7 @@ const BackButton = () => (
 const IssueDetails: React.FC = () => {
   const issue = useIssue()
   return (
-    <div className={classnames('issueDetailsPage', styles.issueDetailsPage)}>
+    <div className={classnames("issueDetailsPage", styles.issueDetailsPage)}>
       <h1 className="issue-detail__title">{issue.title}</h1>
       <BackButton />
       <IssueMeta issue={issue} />
@@ -667,7 +740,7 @@ const IssueDetails: React.FC = () => {
       <hr className={styles.divider} />
       <div className={styles.summary}>
         <ReactMarkdown
-          className={'testing'}
+          className={"testing"}
           source={insertMentionLinks(issue.body)}
         />
       </div>
@@ -719,14 +792,18 @@ export default IssueDetailsPage
 
 #### IssueComments
 
+And lastly for the comments of the selected issue, we can also just grab the
+hook from where we declared the state and use it. Because of Suspense, we again
+don't need to handle the loading case in here.
+
 ```diff
  import ReactMarkdown from 'react-markdown'
- 
+
  import { insertMentionLinks } from 'utils/stringUtils'
 -import { Issue, Comment } from 'api/githubAPI'
 +import { Comment } from 'api/githubAPI'
  import { UserWithAvatar } from 'components/UserWithAvatar'
- 
+
  import styles from './IssueComments.module.css'
 -
 -interface ICLProps {
@@ -734,13 +811,13 @@ export default IssueDetailsPage
 -  comments: Comment[]
 -}
 +import { useIssueComments } from 'state'
- 
+
  interface ICProps {
    comment: Comment
 @@ -35,20 +31,8 @@ function IssueComment({ comment }: ICProps) {
    )
  }
- 
+
 -export function IssueComments({ comments = [], issue }: ICLProps) {
 -  // The issue has no comments
 -  if (issue.comments === 0) {
@@ -764,9 +841,28 @@ export default IssueDetailsPage
 
 ## Summary
 
-<iframe src="https://codesandbox.io/embed/github/re-rxjs/react-rxjs-github-issues-example?fontsize=14&hidenavigation=1&theme=dark&view=editor&module=%2Fsrc%2Fstate.ts"
+The result of this tutorial can be seen in this CodeSandbox:
+
+<iframe src="https://codesandbox.io/embed/github/re-rxjs/react-rxjs-github-issues-example/tree/master?fontsize=14&hidenavigation=1&theme=dark&view=editor&module=%2Fsrc%2Fstate.ts"
      style={{ width: '100%', height: '500px', border: 0, borderRadius: '4px', overflow: 'hidden' }}
      title="react-rxjs-github-issues-example"
      allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb"
      sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"
 ></iframe>
+
+With this, we've managed to:
+
+- Showcase an example of an application that deals with service calls.
+- Have the application state declared reactively. This implies:
+  - We can read the state definition top-to-bottom.
+  - Every piece of the state declares how it behaves.
+- Solved both of the issues that the original example had on synchronizing
+  states.
+- Used two of the newest React techniques to declare loading and error states.
+- Reduce boilerplate: the net diff shows a negative number of lines.
+
+It's worth noting as another advantage, that in this example we've decided to
+have the all the state definition in a single file, as the example is small
+enough and it's easier to explain. However, in a real application you can split
+and colocate the state to each of the relevant bits of your application, and it
+will play nice with code-splitting if you were to use lazy imports.

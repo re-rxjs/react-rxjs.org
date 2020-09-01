@@ -26,20 +26,20 @@ users are also producers of events!). Let's create some `Subject`s for this, and
 some functions that wrap the subjects, which we can use from our components:
 
 ```tsx
-import { Subject } from "rxjs";
+import { Subject } from "rxjs"
 
-const newTodo$ = new Subject<string>();
-export const onNewTodo = (text: string) => text && newTodo.next(text);
+const newTodo$ = new Subject<string>()
+export const onNewTodo = (text: string) => text && newTodo.next(text)
 
-const editTodo$ = new Subject<{ id: number; text: string }>();
+const editTodo$ = new Subject<{ id: number; text: string }>()
 export const onEditTodo = (id: number, text: string) =>
-  editTodo$.next({ id, text });
+  editTodo$.next({ id, text })
 
-const toggleTodo$ = new Subject<number>();
-export const onToggleTodo = (id: number) => toggleTodo$.next(id);
+const toggleTodo$ = new Subject<number>()
+export const onToggleTodo = (id: number) => toggleTodo$.next(id)
 
-const deleteTodo$ = new Subject<number>();
-export const onDeleteTodo = (id: number) => deleteTodo.next(id);
+const deleteTodo$ = new Subject<number>()
+export const onDeleteTodo = (id: number) => deleteTodo.next(id)
 ```
 
 ## Creating a stream for all the events
@@ -123,5 +123,5 @@ more convenient to have an Observable of a `Map<number, Todo>`, and that's
 exactly what the `collectValues` operator does:
 
 ```ts
-const todosMap$: Observable<Map<number, Todo>> = todos$.pipe(collectValues());
+const todosMap$: Observable<Map<number, Todo>> = todos$.pipe(collectValues())
 ```
