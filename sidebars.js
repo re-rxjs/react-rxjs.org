@@ -9,6 +9,14 @@ module.exports = {
       "tutorial/intro",
       "tutorial/basic"
     ],
-    "API Reference": [],
+    "API Reference": [
+      "api/core/bind",
+      "api/core/share-latest",
+      {
+        "type": "category",
+        "label": "Utils",
+        "items": []
+      }
+    ],
   },
 };
