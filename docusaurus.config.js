@@ -39,7 +39,7 @@ module.exports = {
             },
             {
               label: "Core Concepts",
-              to: "docs/introduction/coreConcepts/",
+              to: "docs/introduction/core-concepts/",
             },
           ],
         },
