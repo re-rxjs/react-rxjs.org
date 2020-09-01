@@ -1,7 +1,7 @@
 ---
 id: bind
-title: bind
-sidebar_label: bind
+title: bind()
+sidebar_label: bind()
 ---
 
 Creates a hook and its respective shared stream from an observable or factory of observables.
