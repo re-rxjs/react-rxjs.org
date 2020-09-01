@@ -21,7 +21,7 @@ module.exports = {
           position: "left",
         },
         {
-          to: "docs/tutorial/intro",
+          to: "docs/tutorial/github-issues",
           activeBasePath: "docs",
           label: "Tutorial",
           position: "left",
@@ -100,4 +100,4 @@ module.exports = {
       },
     ],
   ],
-};
+}
