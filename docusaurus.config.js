@@ -13,7 +13,7 @@ module.exports = {
         alt: "React-RxJS Logo",
         src: "img/logo-128.png",
       },
-      links: [
+      items: [
         {
           to: "docs/",
           activeBasePath: "docs",
@@ -74,8 +74,6 @@ module.exports = {
       "@docusaurus/preset-classic",
       {
         docs: {
-          // It is recommended to set document id as docs home page (`docs/` path).
-          homePageId: "introduction/getting-started",
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           editUrl: "https://github.com/re-rxjs/react-rxjs.org/tree/master/",
