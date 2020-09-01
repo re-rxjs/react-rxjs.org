@@ -1,7 +1,5 @@
 ---
-id: use-subscribe
 title: useSubscribe()
-sidebar_label: useSubscribe()
 ---
 
 A React hook that creates a subscription to the provided observable once the

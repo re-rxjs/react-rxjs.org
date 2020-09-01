@@ -1,7 +1,5 @@
 ---
-id: collect
 title: collect()
-sidebar_label: collect()
 ---
 
 A pipeable operator that collects all the GroupedObservables emitted by

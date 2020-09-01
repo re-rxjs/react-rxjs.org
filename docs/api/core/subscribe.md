@@ -1,7 +1,5 @@
 ---
-id: subscribe
 title: <Subscribe />
-sidebar_label: <Subscribe />
 ---
 
 A React Component that creates a subscription to the provided observable once

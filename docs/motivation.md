@@ -1,7 +1,5 @@
 ---
-id: motivation
 title: Motivation
-sidebar_label: Motivation
 ---
 
 React is not Reactive. [Richard Harris](https://twitter.com/Rich_Harris) does a

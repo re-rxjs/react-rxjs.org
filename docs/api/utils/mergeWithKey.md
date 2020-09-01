@@ -1,7 +1,5 @@
 ---
-id: merge-with-key
 title: mergeWithKey()
-sidebar_label: mergeWithKey()
 ---
 
 Emits the values from all the streams of the provided object, in a result

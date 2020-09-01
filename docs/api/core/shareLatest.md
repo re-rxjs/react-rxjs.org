@@ -1,7 +1,5 @@
 ---
-id: share-latest
 title: shareLatest()
-sidebar_label: shareLatest()
 ---
 
 A RxJS pipeable operator which multicasts the source stream and replays the

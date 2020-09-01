@@ -31,7 +31,7 @@ It would be very convenient to have a merged stream with all those events. Howev
 if we did a traditional `merge`, then it would be very challenging to know where
 each event came from.
 
-That's why we expose the [`mergeWithKey`](/api/utils#mergeWithKey) operator from the
+That's why we expose the [`mergeWithKey`](../api/utils/mergeWithKey) operator from the
 `@react-rxjs/utils` package. Let's use it:
 
 ```tsx
@@ -70,7 +70,7 @@ const todoActions$ = merge(
 
 Now that we have a stream for all the events, let's create a stream for
 each todo. We will be using another operator from `@react-rxjs/utils` for that,
-the [`split` operator](/api/utils#split) operator:
+the [`split` operator](../api/utils/split) operator:
 
 ```ts
 type Todo = { id: number, text: string, done: boolean }

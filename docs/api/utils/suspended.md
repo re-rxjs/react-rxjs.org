@@ -1,7 +1,5 @@
 ---
-id: suspended
 title: suspended()
-sidebar_label: suspended()
 ---
 
 The pipeable version of `suspend`.
