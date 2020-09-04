@@ -23,16 +23,16 @@ yarn add @react-rxjs/core
 `@react-rxjs/core` exports a function called `bind` which is used to connect a stream to a hook.
 
 ```tsx
-import { Subject } from "rxjs";
-import { startWith } from "rxjs/operators";
-import { bind } from "@react-rxjs/core";
+import { Subject } from "rxjs"
+import { startWith } from "rxjs/operators"
+import { bind } from "@react-rxjs/core"
 
-const textSubject = new Subject();
-const setText = (newText) => textSubject.next(newText);
-const [useText, text$] = bind(textSubject.pipe(startWith("")));
+const textSubject = new Subject()
+const setText = (newText) => textSubject.next(newText)
+const [useText, text$] = bind(textSubject.pipe(startWith("")))
 
 function TextInput() {
-  const text = useText();
+  const text = useText()
 
   return (
     <div>
@@ -44,29 +44,29 @@ function TextInput() {
       <br />
       Echo: {text}
     </div>
-  );
+  )
 }
 ```
 
 `bind` returns a tuple that contains the hook, plus the underlying shared observable so it can be used by other streams:
 
 ```tsx
-import { pluck } from "rxjs/operators";
-import { bind } from "@react-rxjs/core";
+import { pluck } from "rxjs/operators"
+import { bind } from "@react-rxjs/core"
 
 // Previously...
 // const [useText, text$] = bind(...);
 
-const [useCharCount] = bind(text$.pipe(pluck("length")));
+const [useCharCount] = bind(text$.pipe(pluck("length")))
 
 function CharacterCount() {
-  const count = useCharCount();
+  const count = useCharCount()
 
-  return <>Character Count: {count}</>;
+  return <>Character Count: {count}</>
 }
 ```
 
-If we put everything toghether
+If we put everything together
 
 ```tsx
 function CharacterCounter() {
@@ -75,10 +75,14 @@ function CharacterCounter() {
       <TextInput />
       <CharacterCount />
     </div>
-  );
+  )
 }
 ```
 
 This is shown as:
 
 <CharacterCounter />
+
+## Next steps
+
+We strongly recommend reading through [core concepts](core-concepts.md) to understand the mindset of this library.
