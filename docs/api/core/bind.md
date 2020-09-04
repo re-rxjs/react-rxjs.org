@@ -64,23 +64,3 @@ Returns `[1, 2]`
 2. A `sharedLatest` version of the observable returned by the factory function. It
    can be used for composing other streams that depend on it. The shared subscription
    is closed as soon as there are no subscribers to that observable.
-
-## Grace time
-
-Both overloads accept an optional numeric parameter, `unsubscribeGraceTime`
-
-```ts
-const [useCounter, counter$] = bind(
-  clicks$.pipe(
-    scan((prev) => prev + 1, 0),
-    startWith(0)
-  ),
-  1000
-);
-```
-
-This sets the delay until the internal subscription can be closed, in
-milliseconds. It defaults to 200.
-
-It's meant to handle those cases where React quickly unmounts and remounts
-components between re-renders.
