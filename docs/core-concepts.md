@@ -21,35 +21,35 @@ React-RxJS bridges the gap between these two behaviors, making it possible to de
 RxJS streams are used to represent events or changing values over time. They have an important property: Because of their declarative nature, they don't execute the effect until someone subscribes to it.
 
 ```ts
-import { Observable } from "rxjs";
+import { Observable } from "rxjs"
 
 const first5Numbers = new Observable((obs) => {
-  console.log("hello!");
-  for (let i = 0; i < 5; i++) obs.next(i);
-  obs.complete();
-});
+  console.log("hello!")
+  for (let i = 0; i < 5; i++) obs.next(i)
+  obs.complete()
+})
 // Logs nothing
 
 first5Numbers.subscribe((n) => {
-  console.log(n);
-});
+  console.log(n)
+})
 // Logs "hello!" followed by 0 1 2 3 4
 ```
 
 Not only that, but they are unicast: A new subscription is created for every new observer.
 
 ```ts
-import { interval } from "rxjs";
-import { take } from "rxjs/operators";
+import { interval } from "rxjs"
+import { take } from "rxjs/operators"
 
-const first5SpacedNumbers = interval(1000).pipe(take(5));
+const first5SpacedNumbers = interval(1000).pipe(take(5))
 
-first5SpacedNumbers.subscribe((v) => console.log("A", v));
+first5SpacedNumbers.subscribe((v) => console.log("A", v))
 // Will start logging A1... A2...
 
 setTimeout(() => {
-  first5SpacedNumbers.subscribe((v) => console.log("B", v));
-}, 2000);
+  first5SpacedNumbers.subscribe((v) => console.log("B", v))
+}, 2000)
 // Will continue with B1... A3... B2... A4
 ```
 
@@ -58,17 +58,17 @@ This makes sense because you might want to have a different state for each subsc
 RxJS has an operator that helps with this, called `share`:
 
 ```ts
-import { interval } from "rxjs";
-import { take, share } from "rxjs/operators";
+import { interval } from "rxjs"
+import { take, share } from "rxjs/operators"
 
-const first5SpacedNumbers = interval(1000).pipe(take(5), share());
+const first5SpacedNumbers = interval(1000).pipe(take(5), share())
 
-first5SpacedNumbers.subscribe((v) => console.log("A", v));
+first5SpacedNumbers.subscribe((v) => console.log("A", v))
 // Will start logging A1... A2...
 
 setTimeout(() => {
-  first5SpacedNumbers.subscribe((v) => console.log("B", v));
-}, 2000);
+  first5SpacedNumbers.subscribe((v) => console.log("B", v))
+}, 2000)
 // Will continue with A3 B3... A4 B4...
 ```
 
@@ -83,18 +83,18 @@ RxJS has another operator `shareReplay` which would cover this issue. However, i
 So that's why React-RxJS provides `shareLatest`. In essence, it addresses the issue of sharing the state between many components and keeping always the latest value, but without the additional issues that `shareReplay` exposes for this particular use case. So with React-RxJS our example would become:
 
 ```ts
-import { interval } from "rxjs";
-import { take } from "rxjs/operators";
-import { shareLatest } from "@react-rxjs/core";
+import { interval } from "rxjs"
+import { take } from "rxjs/operators"
+import { shareLatest } from "@react-rxjs/core"
 
-const first5SpacedNumbers = interval(1000).pipe(take(5), shareLatest());
+const first5SpacedNumbers = interval(1000).pipe(take(5), shareLatest())
 
-first5SpacedNumbers.subscribe((v) => console.log("A", v));
+first5SpacedNumbers.subscribe((v) => console.log("A", v))
 // Will start logging A1... A2...
 
 setTimeout(() => {
-  first5SpacedNumbers.subscribe((v) => console.log("B", v));
-}, 2000);
+  first5SpacedNumbers.subscribe((v) => console.log("B", v))
+}, 2000)
 // Will continue with B2... A3 B3... A4 B4...
 ```
 
@@ -111,50 +111,52 @@ The main function of React-RxJS, `bind`, uses this operator on every stream. `bi
 If we use bind instead, our example will become:
 
 ```ts
-import { interval } from "rxjs";
-import { take } from "rxjs/operators";
-import { bind } from "@react-rxjs/core";
+import { interval } from "rxjs"
+import { take } from "rxjs/operators"
+import { bind } from "@react-rxjs/core"
 
 const [useFirst5SpacedNumbers, first5SpacedNumbers] = bind(
-  interval(1000).pipe(take(5))
-);
+  interval(1000).pipe(take(5)),
+)
 ```
 
 `useFirst5SpacedNumbers` is a hook that will return just a number, which is shared for all components that use it.
 
 Something important to note, though, is that the subscription will happen as soon as there's a subscriber and it will be alive until there are no more subscribers. This means that if all of the components that subscribe to this stream unmount for a while, the latest value will be forgotten, and it will restart the stream when there's a new subscription.
 
-`bind` already handles the case of quick unmount/remount that happen quite often in React (such as when moving one component between different subtrees), but if you want to keep the subscription and the latest value alive even if the component unmounts, you can use `<Subscribe source$={stream} />` or `useSubscribe(stream)` in the relevant bit of your component tree: Within some component that will keep mounted until you don't need the subscription anymore.
+For this reason, it's important to understand that these streams only represent state. React can subscribe to any of these at any time to read the state. If the subscription is alive at that moment, then it will receive the latest value, but if it isn't, a new subscription will be made (possibly making a request to the server).
+
+If you want to keep one of these streams alive for as long as you need, React-RxJS also exposes `useSubscribe(stream)` and `<Subscribe source$={stream}>{ content }</Subscribe>`, which will render `{ content }` only after it subscribed to `stream`.
 
 ## Composing streams
 
 You might have noticed that `bind` returns the hook inside a tuple. This is because `bind` also exposes the stream with `shareLatest` applied so it can be easily composed.
 
 ```ts
-import { interval } from "rxjs";
-import { take } from "rxjs/operators";
-import { bind } from "@react-rxjs/core";
+import { interval } from "rxjs"
+import { take } from "rxjs/operators"
+import { bind } from "@react-rxjs/core"
 
-const [useSeconds, second$] = bind(interval(1000));
+const [useSeconds, second$] = bind(interval(1000))
 
 const [useLatestNSeconds, latestNSeconds$] = bind((n: number) =>
-  second$.pipe(take(n))
-);
+  second$.pipe(take(n)),
+)
 ```
 
 Composition is an important factor in RxJS streams. It's often recommended to break down streams into smaller chunks, that you can later compose into more complex interactions.
 
-Note that you might not need to use `bind` on every observable. `bind` only makes sense when you need to get a hook for that stream, or to create a _parametric_ observable (basically a function that returns an observable).
+Note that you might not need to use `bind` on every observable. `bind` only makes sense when you need to get a hook for that stream, or to create a factory of observables (basically a function that returns observables based on its arguments).
 
 ## Entry points
 
 Now, where does data for the state come from? Probably the first example that we might think in RxJS is something that fetches some data:
 
 ```ts
-import { ajax } from "rxjs/ajax";
-import { bind } from "@react-rxjs/core";
+import { ajax } from "rxjs/ajax"
+import { bind } from "@react-rxjs/core"
 
-const [usePost, post$] = bind((id: string) => ajax.getJSON("/posts/" + id));
+const [usePost, post$] = bind((id: string) => ajax.getJSON("/posts/" + id))
 ```
 
 And of course, this will work: Any component can use `usePost` to fetch the post of a specific id.
@@ -164,19 +166,19 @@ However, there are some times where we need to use data coming directly from the
 With a `Subject` you can create an entry point for your streams. For example, in a local todos app, you can define your state as:
 
 ```ts
-import { Subject } from "rxjs";
-import { scan, startWith } from "rxjs/operators";
-import { bind } from "@react-rxjs/core";
+import { Subject } from "rxjs"
+import { scan, startWith } from "rxjs/operators"
+import { bind } from "@react-rxjs/core"
 
-const newTodos = new Subject();
-const postNewTodo = (todo) => newTodos.next(todo);
+const newTodos = new Subject()
+const postNewTodo = (todo) => newTodos.next(todo)
 
 const [useTodoList, todoList$] = bind(
   newTodos.pipe(
     scan((acc, todo) => [...acc, todo], []),
-    startWith([])
-  )
-);
+    startWith([]),
+  ),
+)
 ```
 
 And now the "TodoForm" component can directly call `postNewTodo` whenever the user creates a todo, and the change will be propagated down to the list.
@@ -190,10 +192,10 @@ Remember, if you have a case like this (where you are pushing a Subject but no o
 In an earlier example:
 
 ```ts
-import { ajax } from "rxjs/ajax";
-import { bind } from "@react-rxjs/core";
+import { ajax } from "rxjs/ajax"
+import { bind } from "@react-rxjs/core"
 
-const [usePost, post$] = bind((id: string) => ajax.getJSON("/posts/" + id));
+const [usePost, post$] = bind((id: string) => ajax.getJSON("/posts/" + id))
 ```
 
 You might be wondering - how does this _exactly_ work with React? If React is pull-based and it _needs_ a value at the time it's re-rendering, this stream won't have a value until the ajax call is resolved.
@@ -205,13 +207,13 @@ Well, React added a feature called Suspense. With Suspense, we can represent val
 Note that for this to work properly, you need to have proper Suspense boundaries throughout your component tree. If you don't want to use Suspense just yet, the solution is simple: Make sure that the stream always has a value. In our example, if we decide that `null` represents missing values, the solution is as simple as:
 
 ```ts
-import { ajax } from "rxjs/ajax";
-import { startWith } from "rxjs/operators";
-import { bind } from "@react-rxjs/core";
+import { ajax } from "rxjs/ajax"
+import { startWith } from "rxjs/operators"
+import { bind } from "@react-rxjs/core"
 
 const [usePost, post$] = bind((id: string) =>
-  ajax.getJSON("/posts/" + id).pipe(startWith(null))
-);
+  ajax.getJSON("/posts/" + id).pipe(startWith(null)),
+)
 ```
 
 Now `usePost` will emit `null` immediately while it's fetching data (so that we can manually handle that), instead of suspending the component, and when the ajax call is resolved, it will emit the result of that call.
@@ -222,16 +224,16 @@ There's something to keep in mind though: React Suspense works in a serialized w
 
 ```tsx
 const UserProfile = () => {
-  const details = useUserDetails();
-  const posts = useUserPosts();
+  const details = useUserDetails()
+  const posts = useUserPosts()
 
   return (
     <div>
       <UserDetails details={details} />
       <UserPosts posts={posts} />
     </div>
-  );
-};
+  )
+}
 ```
 
 In this case, because of the way that Suspense works, these fetches will happen in sequential order. This means that initially `useUserDetails` will subscribe to `userDetails$`, which will start fetching data and suspend the component. When the fetch call resolves, `useUserDetails` will "resume" the component, and `useUserPosts` will run, subscribing and fetching the data, and suspending the component yet again.
@@ -239,7 +241,7 @@ In this case, because of the way that Suspense works, these fetches will happen 
 This is usually a code smell. If you need to use many react-rxjs hooks in a component, each of which will do some asynchronous work, it's often better to move this logic into a single stream (and hook) by using composition:
 
 ```ts
-const [useUserDetailsAndPosts] = bind(combineLatest(userDetail$, userPosts$));
+const [useUserDetailsAndPosts] = bind(combineLatest(userDetail$, userPosts$))
 ```
 
 Now `useUserDetailsAndPosts` will start fetching both resources and suspend the component just once for both of them.
@@ -257,10 +259,10 @@ We recommend creating Error Boundaries with [react-error-boundary](https://githu
 Let's take a look at an example:
 
 ```tsx
-import { bind } from "@react-rxjs/core";
-import { interval } from "rxjs";
-import { map, startWith } from "rxjs/operators";
-import { ErrorBoundary } from "react-error-boundary";
+import { bind } from "@react-rxjs/core"
+import { interval } from "rxjs"
+import { map, startWith } from "rxjs/operators"
+import { ErrorBoundary } from "react-error-boundary"
 
 const [useTimedBomb] = bind(
   interval(1000).pipe(
@@ -268,17 +270,17 @@ const [useTimedBomb] = bind(
     startWith(0),
     map((v) => {
       if (v === 3) {
-        throw new Error("boom");
+        throw new Error("boom")
       }
-      return v;
-    })
-  )
-);
+      return v
+    }),
+  ),
+)
 
 function Bomb() {
-  const time = useTimedBomb();
+  const time = useTimedBomb()
 
-  return <div>{time}</div>;
+  return <div>{time}</div>
 }
 
 function ErrorFallback({ error, componentStack, resetErrorBoundary }) {
@@ -289,7 +291,7 @@ function ErrorFallback({ error, componentStack, resetErrorBoundary }) {
       <pre>{componentStack}</pre>
       <button onClick={resetErrorBoundary}>Try again</button>
     </div>
-  );
+  )
 }
 
 function App() {
@@ -299,7 +301,7 @@ function App() {
         <Bomb />
       </ErrorBoundary>
     </div>
-  );
+  )
 }
 ```
 

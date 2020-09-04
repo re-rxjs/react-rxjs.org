@@ -8,5 +8,5 @@ the component mounts, and unsubscribes when the component unmounts.
 Properties:
 
 - `source$`: Source observable that the Component will subscribe to.
-
-Important: This Component doesn't trigger any updates.
+- `children`: (Optional) children to display after it has subscribed.
+- `fallback`: (Optional) children to display while it hasn't subscribed.
