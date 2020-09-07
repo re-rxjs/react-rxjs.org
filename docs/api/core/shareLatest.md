@@ -2,7 +2,7 @@
 title: shareLatest()
 ---
 
-An RxJS pipeable operator which multicasts the source stream and replays the
+An RxJS [pipeable operator] which multicasts the source stream and replays the
 latest emitted value.
 
 ```ts
@@ -11,12 +11,12 @@ function shareLatest<T>(): MonoTypeOperatorFunction<T>
 
 #### Returns
 
-[`MonoTypeOperatorFunction<T>`]: An observable that shares the latest emitted value from the 
-source observable with all subscribers, and restarts the stream when it completes or errors.
+[`MonoTypeOperatorFunction<T>`]: An Observable that shares the latest emitted value from the 
+source Observable with all subscribers, and restarts the stream when it completes or errors.
 
 ### Description
 
-The observables returned from [`bind`] have been enhanced with this operator.
+The Observables returned from [`bind`] have been enhanced with this operator.
 
 It's similar to RxJS's `shareReplay({ refCount: true, bufferSize: 1 })`, but
 with one difference: If the source stream completes or errors, `shareReplay`
@@ -44,4 +44,4 @@ const activePlanetName$ = planet$.pipe(
 [`bind`]: bind
 [`shareReplay`]: https://rxjs-dev.firebaseapp.com/api/operators/shareReplay
 [`MonoTypeOperatorFunction<T>`]: https://rxjs-dev.firebaseapp.com/api/index/interface/MonoTypeOperatorFunction
-
+[pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators

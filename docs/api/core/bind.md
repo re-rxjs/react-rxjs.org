@@ -3,7 +3,7 @@ title: bind(observable)
 sidebar_label: bind()
 ---
 
-Binds an observable to React, and returns a hook and shared stream representing the source observable.
+Binds an Observable to React, and returns a hook and shared stream representing the source Observable.
 
 ```ts
 function bind<T>(observable: Observable<T>): 
@@ -12,19 +12,19 @@ function bind<T>(observable: Observable<T>):
 
 #### Arguments
 
-- `observable`: Source observable to be used by the hook.
+- `observable`: The source Observable to be used by the hook.
 
 #### Returns
 
 `[1, 2]`:
 
-1. A React Hook that yields the latest emitted value of the observable. If the
+1. A React Hook that yields the latest emitted value of the Observable. If the
    Observable doesn't synchronously emit a value upon the first subscription, then
    the hook will leverage React Suspense while it's waiting for the first value.
 
-2. A [`shareLatest`] version of the observable. It can be used for composing other
+2. A [`shareLatest`] version of the source Observable. It can be used for composing other
    streams that depend on it. The shared subscription is closed as soon as there
-   are no subscribers to that observable.
+   are no subscribers to that Observable.
 
 ### Example
 
@@ -48,7 +48,7 @@ function CounterDisplay() {
 
 ## Factory Overload
 
-Binds an observable factory function to React, and returns a hook and shared stream representing the created observables.
+Binds an Observable factory function to React, and returns a hook and shared stream representing the created Observables.
 
 ```ts
 function bind<A extends unknown[], O>(getObservable: (...args: A) => Observable<O>): 
@@ -57,7 +57,7 @@ function bind<A extends unknown[], O>(getObservable: (...args: A) => Observable<
 
 #### Arguments
 
-- `getObservable`: Factory of observables. The arguments of this function 
+- `getObservable`: Factory of Observables. The arguments of this function 
    will be the ones used in the hook.
 
 #### Returns
@@ -65,13 +65,13 @@ function bind<A extends unknown[], O>(getObservable: (...args: A) => Observable<
 `[1, 2]`:
 
 1. A React hook with the same arguments as the factory function. This hook
-   will yield the latest update from the observable returned from the factory function.
+   will yield the latest update from the Observable returned from the factory function.
    If the Observable doesn't synchronously emit a value upon the first subscription, then
    the hook will leverage React Suspense while it's waiting for the first value.
 
-2. A [`shareLatest`] version of the observable returned by the factory function. It
+2. A [`shareLatest`] version of the Observable returned by the factory function. It
    can be used for composing other streams that depend on it. The shared subscription
-   is closed as soon as there are no subscribers to that observable.
+   is closed as soon as there are no subscribers to that Observable.
 
 
 ### Example
@@ -95,7 +95,6 @@ const Story: React.FC<{ id: number }> = ({ id }) => {
 
 ## See also
 
-* [`shareLatest()`]
+* [`shareLatest()`](shareLatest)
 
 [`shareLatest`]: shareLatest
-[`shareLatest()`]: shareLatest

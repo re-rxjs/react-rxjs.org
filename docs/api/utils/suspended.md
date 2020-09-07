@@ -11,7 +11,7 @@ function suspended<T>(): OperatorFunction<T, T | typeof SUSPEND>
 #### Returns
 
 [`OperatorFunction<T, T | typeof SUSPEND>`][OperatorFunction]: An Observable that emits [`SUSPENSE`] 
-as its first value, followed by the values from the source observable.
+as its first value, followed by the values from the source Observable.
 
 ### Example
 
@@ -25,11 +25,10 @@ const story$ = selectedStoryId$.pipe(
 ```
 
 ## See also
-* [`suspend`]
 * [`SUSPENSE`]
-* [Pipeable Operators][pipeable] (RxJS)
+* [`suspend`]
 
-[`suspend`]: suspend
 [`SUSPENSE`]: ../core/suspense
+[`suspend`]: suspend
 [pipeable]: https://rxjs.dev/guide/v6/pipeable-operators
 [OperatorFunction]: https://rxjs-dev.firebaseapp.com/api/index/interface/OperatorFunction

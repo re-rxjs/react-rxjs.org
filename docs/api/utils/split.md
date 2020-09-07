@@ -19,19 +19,18 @@ function split<T, K>(keySelector: (value: T) => K, streamSelector?: (grouped: Ob
 #### Returns
 
 [`OperatorFunction<T, GroupedObservable<K, T>>`][OperatorFunction]: An Observable that emits a grouped Observable for each key
-provided by the key selector function. The values from the source observable emitted in each grouped Observable 
+provided by the key selector function. The values from the source Observable emitted in each grouped Observable 
 are optional transformed by the stream selector function, if specified.
 
 ### Description
 
-`split` will subscribe to each group observable and share the result to every
-inner subscriber of that group. This inner observable can be mapped to another
-observable through the `streamSelector` argument.
+`split` will subscribe to each grouped Observable and share the result to every
+inner subscriber of that group. This inner Observable can be mapped to another
+Observable through the `streamSelector` argument.
 
 ## See also
 * [`collect(filter)`](collect)
 * [`collectValues()`](collectValues)
-* [`GroupedObservable`](https://rxjs-dev.firebaseapp.com/api/index/class/GroupedObservable) (RxJS)
 
 [pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
 [OperatorFunction]: https://rxjs-dev.firebaseapp.com/api/index/interface/OperatorFunction
