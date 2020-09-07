@@ -2,6 +2,8 @@
 title: Github Issues example
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 For this tutorial we will be borrowing the [Github issues example that it's taught
 on the Advanced Tutorial of the Redux Toolkit](https://redux-toolkit.js.org/tutorials/advanced-tutorial).
 
@@ -167,7 +169,7 @@ Now that we have everything ready, let's think for a moment about the state of
 this App. Luckily for us, there is not a lot of it. So, let's represent the different
 state entities and their relations on a diagram:
 
-<img src="/static/img/github-issues-dependencies.png"
+<img src={useBaseUrl('img/github-issues-dependencies.png')}
 alt="A diagram that represents the relations of the entities, at the top we have the user inputs
 followed by those states that depend on them directly and one level below we have those states
 that depend on other states" />
