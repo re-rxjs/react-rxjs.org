@@ -39,7 +39,7 @@ const activePlanetName$ = planet$.pipe(
 
 ## See also
 * [`bind`]
-* [`shareReplay`] (RxJs)
+* [`shareReplay`] (RxJS)
 
 [`bind`]: bind
 [`shareReplay`]: https://rxjs-dev.firebaseapp.com/api/operators/shareReplay
