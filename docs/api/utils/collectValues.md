@@ -2,12 +2,24 @@
 title: collectValues()
 ---
 
-A pipeable operator that collects all the GroupedObservables emitted by
-the source and emits a Map with the latest values of the inner observables.
+A [pipeable operator] that collects all the [`GroupedObservable`]s emitted by
+the source and emits a `Map` with the latest values of the inner observables.
+
+```ts
+function collectValues<K, V>(): OperatorFunction<GroupedObservable<K, V>, Map<K, V>>
+```
+
+#### Returns
+
+`OperatorFunction<GroupedObservable<K, V>, Map<K, V>>`: **TODO**
 
 ### Example
 
 ```ts
+import { Subject } from 'rxjs'
+import { mapTo, scan, takeWhile } from 'rxjs/operators'
+import { collectValues, split } from '@react-rxjs/utils'
+
 const votesByKey$ = new Subject<{ key: string }>()
 const counters$ = votesByKey$.pipe(
   split(
@@ -53,3 +65,10 @@ votesByKey$.next({ key: "bar" })
 votesByKey$.next({ key: "bar" })
 // > counters$:
 ```
+
+## See also
+* [`collect(filter)`](collect)
+* [`split(keySelector)`](split)
+
+[pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
+[`GroupedObservable`]: https://rxjs-dev.firebaseapp.com/api/index/class/GroupedObservable

@@ -2,12 +2,32 @@
 title: suspended()
 ---
 
-The pipeable version of `suspend`.
+The [pipeable] version of [`suspend`]. Prepends a [`SUSPENSE`] to the source observable.
+
+```ts
+function suspended<T>(): OperatorFunction<T, T | typeof SUSPEND>
+```
+
+#### Returns
+
+**TODO**
 
 ### Example
 
 ```ts
+import { switchMap } from 'rxjs/operators'
+import { suspended } from '@react-rxjs/utils'
+
 const story$ = selectedStoryId$.pipe(
   switchMap((id) => getStory$(id).pipe(suspended())),
 )
 ```
+
+## See also
+* [`suspend`]
+* [`SUSPENSE`]
+* [Pipeable Operators][pipeable] (RxJS)
+
+[`suspend`]: suspend
+[`SUSPENSE`]: ../core/suspense
+[pipeable]: https://rxjs.dev/guide/v6/pipeable-operators
