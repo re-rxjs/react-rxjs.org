@@ -3,7 +3,7 @@ title: collectValues()
 ---
 
 A [pipeable operator] that collects all the [`GroupedObservable`]s emitted by
-the source and emits a `Map` with the latest values of the inner observables.
+the source and emits a `Map` with the latest values of the inner Observables.
 
 ```ts
 function collectValues<K, V>(): OperatorFunction<GroupedObservable<K, V>, Map<K, V>>
@@ -11,7 +11,8 @@ function collectValues<K, V>(): OperatorFunction<GroupedObservable<K, V>, Map<K,
 
 #### Returns
 
-`OperatorFunction<GroupedObservable<K, V>, Map<K, V>>`: **TODO**
+[`OperatorFunction<GroupedObservable<K, V>, Map<K, V>>`][OperatorFunction]: An Observable that 
+emits a `Map` with the latest value for each key in the source grouped Observables.
 
 ### Example
 
@@ -72,3 +73,4 @@ votesByKey$.next({ key: "bar" })
 
 [pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
 [`GroupedObservable`]: https://rxjs-dev.firebaseapp.com/api/index/class/GroupedObservable
+[OperatorFunction]: https://rxjs-dev.firebaseapp.com/api/index/interface/OperatorFunction
