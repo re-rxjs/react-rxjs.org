@@ -9,12 +9,12 @@ function suspend<T>(source$: Observable<T>) => Observable<T | typeof SUSPEND>
 ```
 
 #### Arguments
-
-**TODO**
+* `source$`: The source Observable.
 
 #### Returns
 
-**TODO**
+`Observable<T | typeof SUSPEND>`: An Observable that emits [`SUSPENSE`] 
+as its first value, followed by the values from the source observable.
 
 ### Example
 
