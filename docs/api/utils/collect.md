@@ -13,13 +13,15 @@ function collect<K, V>(filter?: (grouped: GroupedObservable<K, V>) => Observable
 
 #### Arguments
 
-- `filter?`: (Optional, default = undefined) A function that receives the inner 
+- `filter?`: (Optional, default = undefined). A function that receives the inner 
   Observable and returns an Observable of boolean values, which indicates 
   whether the inner observable should be collected.
 
 #### Returns
 
-`OperatorFunction<GroupedObservable<K, V>, Map<K, GroupedObservable<K, V>>>`: **TODO**
+[`OperatorFunction<GroupedObservable<K, V>, Map<K, GroupedObservable<K, V>>>`][OperatorFunction]: An Observable that 
+emits a `Map` containing all the keys seen in the source grouped Observables so far, along with the grouped Observable
+for matches each key.
 
 ## See also
 * [`collectValues()`](collectValues)
@@ -27,3 +29,4 @@ function collect<K, V>(filter?: (grouped: GroupedObservable<K, V>) => Observable
 
 [pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
 [`GroupedObservable`]: https://rxjs-dev.firebaseapp.com/api/index/class/GroupedObservable
+[OperatorFunction]: https://rxjs-dev.firebaseapp.com/api/index/interface/OperatorFunction

@@ -2,7 +2,7 @@
 title: switchMapSuspended()
 ---
 
-Like [`switchMap`], but applying a [`startWith(SUSPENSE)`][`startWith`] to the inner observable.
+Like [`switchMap`], but applying a [`startWith(SUSPENSE)`][`startWith`] to the inner Observable.
 
 ```ts
 function switchMapSuspended<T, O extends ObservableInput<any>>(project: (value: T, index: number) => O): 

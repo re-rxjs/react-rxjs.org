@@ -2,7 +2,7 @@
 title: suspended()
 ---
 
-The [pipeable] version of [`suspend`]. Prepends a [`SUSPENSE`] to the source observable.
+The [pipeable] version of [`suspend`]. Prepends a [`SUSPENSE`] to the source Observable.
 
 ```ts
 function suspended<T>(): OperatorFunction<T, T | typeof SUSPEND>
