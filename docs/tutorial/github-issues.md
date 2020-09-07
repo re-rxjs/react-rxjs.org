@@ -288,7 +288,7 @@ or page, while the new issue list is loading we want to show a suspended state
 This can be expressed reactively as:
 
 ```ts
-export const [useIssues] = bind(
+export const [useIssues, issues$] = bind(
   currentRepoAndPage$.pipe(
     switchMap(({ page, repo, org }) =>
       getIssues(org, repo, page).pipe(startWith(SUSPENSE)),
@@ -304,13 +304,21 @@ component(s) that depend on it while it's fetching the new values.
 We can use the same pattern to retrieve the number of open issues:
 
 ```ts
-export const [usepenIssuesLen] = bind(
+export const [useOpenIssuesLen, openIssuesLen$] = bind(
   currentRepo$.pipe(
     switchMap(({ org, repo }) =>
       getRepoOpenIssuesCount(org, repo).pipe(startWith(SUSPENSE)),
     ),
   ),
 )
+```
+
+Let's create the top-level subscription to make sure that blah, blah...
+
+```ts
+merge(issues$, openIssuesLen$)
+  .pipe(retryWhen(() => currentRepoAndPage$.pipe(skip(1))))
+  .subscribe()
 ```
 
 And lastly we need to declare the state for when an issue is selected: Following
@@ -332,12 +340,18 @@ export const [useIssue, issue$] = bind(
   ),
 )
 
-export const [useIssueComments] = bind(
+export const [useIssueComments, issueComments$] = bind(
   issue$.pipe(
     filter((issue): issue is Issue => issue !== SUSPENSE),
     switchMap(issue => getComments(issue.comments_url).pipe(startWith(SUSPENSE)),
   ),
 )
+```
+
+The other top-level subscription because as we already blah, blah:
+
+```ts
+issueComments$.pipe(retryWhen(() => selectedIssueId$.pipe(skip(1)))).subscribe()
 ```
 
 As this pattern of `switchMap` and `startWith(SUSPENSE)` is something that's
@@ -351,7 +365,7 @@ with the components.
 
 ### Main App Component
 
-The [diff of this component is so brutal](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/459298bf23421b0ef1b5e760fe450fb3a6b72797#diff-34456421648850188ad56fcd6df47b2b)
+The [diff of this component is so brutal](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/0ecad5f387413e70a4a65739f95538dac8f1a666#diff-34456421648850188ad56fcd6df47b2b)
 that it's best to show how the code looks with react-rxjs:
 
 ```tsx
@@ -458,7 +472,7 @@ need to get coupled to values that it doesn't need.
 
 ### IssuesListPage
 
-The page for the list of issues is also [greatly simplified](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/459298bf23421b0ef1b5e760fe450fb3a6b72797#diff-86b21025fd105e75d28d28541f8288b5),
+The page for the list of issues is also [greatly simplified](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/0ecad5f387413e70a4a65739f95538dac8f1a666#diff-86b21025fd105e75d28d28541f8288b5),
 because all the state management on this part is already done, and it turns out
 that this component is not the consumer of any of the state it managed - The
 consumers are their children, which they will access whatever they need.
@@ -691,7 +705,7 @@ the component in Suspense again until the new request has loaded.
 ### IssueDetailsPage
 
 In here, also by using Error boundaries and suspense, we can break down this
-component into smaller ones. There are [too many changes](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/459298bf23421b0ef1b5e760fe450fb3a6b72797#diff-1a799039b78ec6f0b5ab3f324755c673)
+component into smaller ones. There are [too many changes](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/0ecad5f387413e70a4a65739f95538dac8f1a666#diff-1a799039b78ec6f0b5ab3f324755c673)
 to be able to follow this, but the result would be:
 
 ```tsx
