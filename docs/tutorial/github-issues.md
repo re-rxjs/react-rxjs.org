@@ -889,8 +889,151 @@ With this, we've managed to:
 - Used two of the newest React techniques to declare loading and error states.
 - Reduce boilerplate: the net diff shows a negative number of lines.
 
+### Code splitting
+
 It's worth noting as another advantage, that in this example we've decided to
 have the all the state definition in a single file, as the example is small
 enough and it's easier to explain. However, in a real application you can split
-and colocate the state to each of the relevant bits of your application, and it
-will play nice with code-splitting if you were to use lazy imports.
+and collocate the state to each of the relevant bits of your application, and it
+will play nice with code-splitting if you were to use lazy imports. Let's
+quickly try this to see how it plays a big role in load time.
+
+For this example, one bit of the application that can be split from the main
+app is the page for issue details: That page won't be needed until the user
+clicks on one of the issues, so it's a perfect starting point.
+
+With React-RxJS we can just move those streams that are only used by that page
+in a separate file. Let's put it next to where it will be used, the
+IssuesDetailsPage and IssuesComments components:
+
+```ts
+import {
+  startWith,
+  withLatestFrom,
+  filter,
+  switchMap,
+  retryWhen,
+  skip,
+} from "rxjs/operators"
+import { bind, SUSPENSE } from "@react-rxjs/core"
+import { Issue, getIssue, getComments } from "api/githubAPI"
+import { issueSelected$, selectedIssueId$, currentRepo$ } from "state"
+
+export const onIssueUnselecteed = () => {
+  issueSelected$.next(null)
+}
+
+export const [useIssue, issue$] = bind(
+  selectedIssueId$.pipe(
+    filter((id): id is number => id !== null),
+    withLatestFrom(currentRepo$),
+    switchMap(([id, { org, repo }]) =>
+      getIssue(org, repo, id).pipe(startWith(SUSPENSE)),
+    ),
+  ),
+)
+
+export const [useIssueComments, issueComments$] = bind(
+  issue$.pipe(
+    filter((issue): issue is Issue => issue !== SUSPENSE),
+    switchMap((issue) =>
+      getComments(issue.comments_url).pipe(startWith(SUSPENSE)),
+    ),
+  ),
+)
+
+issueComments$.pipe(retryWhen(() => selectedIssueId$.pipe(skip(1)))).subscribe()
+```
+
+Then we only need to update the imports for those components to use this file
+instead:
+
+```diff
+@@ -6,7 +6,7 @@ import { Comment } from 'api/githubAPI'
+ import { UserWithAvatar } from 'components/UserWithAvatar'
+
+ import styles from './IssueComments.module.css'
+-import { useIssueComments } from 'state'
++import { useIssueComments } from './state'
+
+ interface ICProps {
+   comment: Comment
+```
+
+```diff
+@@ -11,7 +11,8 @@ import { IssueComments } from './IssueComments'
+ import styles from './IssueDetailsPage.module.css'
+ import './IssueDetailsPage.css'
+ import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
+-import { onIssueUnselecteed, useIssue, useSelectedIssueId } from 'state'
++import { onIssueUnselecteed, useIssue } from './state'
++import { useSelectedIssueId } from 'state'
+
+ const Comments: React.FC = () => {
+   const { comments } = useIssue()
+@@ -87,7 +88,9 @@ const Issue: React.FC<{ id: number }> = ({ id }) => {
+   )
+ }
+
+-export const IssueDetailsPage: React.FC = () => {
++const IssueDetailsPage: React.FC = () => {
+   const id = useSelectedIssueId()
+   return id === null ? null : <Issue id={id} />
+ }
++
++export default IssueDetailsPage
+```
+
+And use a lazy import with Suspense in App:
+
+```diff
+-import React from 'react'
++import React, { lazy, Suspense } from 'react'
+ import './App.css'
+ import { RepoSearchForm } from 'features/repoSearch/RepoSearchForm'
+ import { IssuesListPage } from 'features/issuesList/IssuesListPage'
+-import { IssueDetailsPage } from 'features/issueDetails/IssueDetailsPage'
+ import { useSelectedIssueId } from 'state'
+
++const IssueDetailsPage = lazy(
++  () => import('features/issueDetails/IssueDetailsPage')
++)
++
+ const List: React.FC = () =>
+   useSelectedIssueId() === null ? (
+     <>
+@@ -16,7 +19,9 @@ const List: React.FC = () =>
+ const App: React.FC = () => (
+   <div className="App">
+     <List />
+-    <IssueDetailsPage />
++    <Suspense fallback={null}>
++      <IssueDetailsPage />
++    </Suspense>
+   </div>
+ )
+```
+
+Now let's compare the speed between the original version with react state
+without code splitting and the one with React-RxJS optimised. Looking at the
+Network tab with 3G for react-state:
+
+<img src={useBaseUrl('img/react-state-network-size.png')}
+alt="A screenshot of chrome's Network tab for react-state. Shows the main
+waterfall chunk is a JS file of 76.8kB (240kB uncompressed), taking 3.71s to
+load" />
+
+We see that the chunk that prevents the application from starting until it's
+completely loaded weighs 76.8kB compressed (240kB uncompressed), and it took
+3.71s to load. And if we take a look at the same tab for React-RxJS with code
+splitting:
+
+<img src={useBaseUrl('img/react-rxjs-network-size.png')}
+alt="A screenshot of chrome's Network tab for react-state. Shows the main
+waterfall chunk is a JS file of 58.6kB (193kB uncompressed), taking 3.31s to
+load" />
+
+We can see that it weighs less, and so it also takes less time to load: About
+20kB (40kB uncompressed) less and 12% faster. Although we didn't move 40kB of
+minified code in a separate chunk, we reached this value because webpack
+performs tree-shaking, and all those dependencies that were used blah blah
