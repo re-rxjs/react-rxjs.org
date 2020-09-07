@@ -5,15 +5,15 @@ title: suspend(observable)
 A RxJS creation operator that prepends a [`SUSPENSE`] to the source Observable.
 
 ```ts
-function suspend<T>(source$: Observable<T>) => Observable<T | typeof SUSPEND>
+function suspend<T>(source$: Observable<T>) => Observable<T | typeof SUSPENSE>
 ```
 
 #### Arguments
-* `source$`: The source observable.
+* `source$`: The source Observable.
 
 #### Returns
 
-`Observable<T | typeof SUSPEND>`: An Observable that emits [`SUSPENSE`] 
+`Observable<T | typeof SUSPENSE>`: An Observable that emits [`SUSPENSE`] 
 as its first value, followed by the values from the source Observable.
 
 ### Example

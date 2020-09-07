@@ -3,7 +3,7 @@ id: subscribe
 title: <Subscribe />
 ---
 
-A React Component that creates a subscription to the provided observable once
+A React Component that creates a subscription to the provided Observable once
 the component mounts, and unsubscribes when the component unmounts.
 
 ```tsx
@@ -15,7 +15,7 @@ const Subscribe: React.FC<{
 
 #### Properties
 
-- `source$`: Source observable that the Component will subscribe to.
+- `source$`: Source Observable that the Component will subscribe to.
 - `fallback`: (Optional, default = `null`). The JSX Element to be rendered 
 before the subscription is created.
 

@@ -12,7 +12,7 @@ function selfDependant<T>(): [Observable<T>, () => MonoTypeOperatorFunction<T>];
 
 `[1, 2]`:
 
-1. An observable... (**TODO**)
+1. An Observable... (**TODO**)
 
 2. A pipeable operator... (**TODO**)
 
