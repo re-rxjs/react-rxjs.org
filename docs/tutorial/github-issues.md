@@ -313,7 +313,15 @@ export const [useOpenIssuesLen, openIssuesLen$] = bind(
 )
 ```
 
-Let's create the top-level subscription to make sure that blah, blah...
+Now, we want to have both `issues$` and `openIssuesLen$` subscriptions alive
+throughout the lifetime of the app, because it might happen that the components
+that need these values are not rendered until it's too late. To solve this, we
+could use `useSubscribe` or `<Subscribe />` in the top-level component, but
+we'll just do it in here as a top-level subscription to keep it simple.
+
+We need to also think on a recovery strategy to make sure this subscription
+doesn't end if there's an error. In our case, we will recover when either the
+current repo or page changes.
 
 ```ts
 merge(issues$, openIssuesLen$)
@@ -348,15 +356,19 @@ export const [useIssueComments, issueComments$] = bind(
 )
 ```
 
-The other top-level subscription because as we already blah, blah:
+As this pattern of `switchMap` and `startWith(SUSPENSE)` is something that's
+often used, react-rxjs exports `switchMapSuspended` in `@react-rxjs/utils` that
+makes it sightly less verbose.
+
+Here we also need to create a subscription to `issueComments$` for a similar
+reason: The component that will subscribe to this stream might do it after
+`issueSelected$` emits, so it would be too late. Notice that by just subscribing
+to `issueComment$`, all the streams that depend on it will also get a
+subscription.
 
 ```ts
 issueComments$.pipe(retryWhen(() => selectedIssueId$.pipe(skip(1)))).subscribe()
 ```
-
-As this pattern of `switchMap` and `startWith(SUSPENSE)` is something that's
-often used, react-rxjs exports `switchMapSuspended` in `@react-rxjs/utils` that
-makes it sightly less verbose.
 
 ## Wiring things up!
 
