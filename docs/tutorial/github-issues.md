@@ -4,7 +4,7 @@ title: Github Issues Viewer
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-:::note Important
+:::caution
 This tutorial assumes you are already familiar with both RxJS and React.
 :::
 
@@ -318,12 +318,14 @@ export const [useOpenIssuesLen, openIssuesLen$] = bind(
 )
 ```
 
+:::info
 Now, since `issues$` and `openIssuesLen$` are observables that trigger side-effects,
 it's important that their initial subscriptions happen before react renders the
 components that depend on them. That's why we are going to define a top-level
 subscription that ensures that.
 
 We need to also make sure that an error won't close this top-level subscription:
+:::
 
 ```ts
 currentRepoAndPage$

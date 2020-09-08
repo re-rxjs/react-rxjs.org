@@ -2,7 +2,7 @@
 title: Todo App
 ---
 
-:::note Important
+:::caution
 This tutorial assumes you have gone through the [Github Issues Viewer](/docs/tutorial/github-issues) 
 tutorial, and that you are already familiar with both RxJS and React.
 :::
