@@ -70,6 +70,7 @@ votesByKey$.next({ key: "bar" })
 ## See also
 * [`collect(filter)`](collect)
 * [`split(keySelector)`](split)
+* [Todo App Tutorial](../../tutorial/todos#collecting-the-groupedobservables)
 
 [pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
 [`GroupedObservable`]: https://rxjs-dev.firebaseapp.com/api/index/class/GroupedObservable

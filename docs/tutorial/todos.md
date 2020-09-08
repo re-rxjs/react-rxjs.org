@@ -1,10 +1,10 @@
 ---
-title: Todos
+title: Todo App
 ---
 
 :::note Important
-This tutorial assumes you have gone through the [Github Issues tutorial](/docs/tutorial/github-issues),
-and that you are already familiar with both: RxJS and React.
+This tutorial assumes you have gone through the [Github Issues Viewer](/docs/tutorial/github-issues) 
+tutorial, and that you are already familiar with both RxJS and React.
 :::
 
 The purpose of the tutorial is to introduce the most important APIs of the
@@ -86,7 +86,7 @@ const todoActions$ = merge(
 
 Now that we have put all the streams together, let's create a stream for
 each todo. And for that, we will be using another operator from `@react-rxjs/utils`:
-the [`split` operator](../api/utils/split): 
+the [`split`](../api/utils/split) operator: 
 
 ```ts
 type Todo = { id: number, text: string, done: boolean }
@@ -119,15 +119,15 @@ As you can see `split` is very similar to the `groupBy` operator that's exposed
 from RxJS. However, there are some important differences:
 
 - The first difference is that `split` doesn't have a "duration selector" argument
-for determining the duration of a inner-stream. Once an inner-stream completes `split`
+for determining the duration of an inner stream. Once an inner stream completes, `split`
 will forget about it, meaning that it will remove it from its internal cache.
 Therefore, if afterwords the source emits a value with the same key, then `split`
-will create (and emit) a new GroupedObservable.
+will create (and emit) a new `GroupedObservable`.
 
 - Another important difference is the second argument of `split`, which allows you
-to create a complex inner-stream that will become the "grouped" stream that it's emitted.
+to create a complex inner stream that will become the "grouped" stream that is emitted.
 
-- Also, this returned stream is enhanced with a `shareReplay(1)` and `split` internally
+- Also, this returned stream is enhanced with a `shareReplay(1)`, and `split` internally
 subscribes to it as soon as it is created to ensure that the consumer always has the
 latest value.
 
@@ -135,8 +135,8 @@ latest value.
 
 Our `todos$` variable is an `Observable` of `GroupedObservables<number, Todo>` and
 that in itself is not very useful. It would be a lot more convenient to have an `Observable`
-of `Map<number, Todo>`. Which is exactly what the [`collectValues` operator](../api/utils/collectValues)
-is for. Let's try it:
+of `Map<number, Todo>`. Which is exactly what the [`collectValues`](../api/utils/collectValues)
+operator is for. Let's try it:
 
 ```ts
 const todosMap$: Observable<Map<number, Todo>> = todos$.pipe(collectValues())
@@ -222,7 +222,7 @@ function TodoItem({item}) {
 }
 ```
 
-That's it! We already got the basic version working. Now let's add the filters and
+That's it! We've already got the basic version working. Now let's add the filters and
 the stats.
 
 ## Adding filters

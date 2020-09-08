@@ -12,9 +12,9 @@ function selfDependant<T>(): [Observable<T>, () => MonoTypeOperatorFunction<T>];
 
 `[1, 2]`:
 
-1. The inner-subject as an Observable.
+1. The inner Subject as an Observable.
 
-2. A pipeable operator that taps into the inner Subject.
+2. A [pipeable operator] that taps into the inner Subject.
 
 ### Example
 
@@ -39,3 +39,4 @@ const resettableCounter$ = merge(inc$, reset$, of(0)).pipe(
   connectResettableCounter(),
 )
 ```
+[pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
