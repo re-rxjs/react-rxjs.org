@@ -78,7 +78,7 @@ However, this now has a different issue for React's use case: If you look closel
 
 As React is _pull_-based, it needs access to the latest value emitted from the stream when it needs to re-render. With the current model, it would have to wait until a new change is emitted in the stream before it can receive the new state, which wouldn't really work. Here's where React-RxJS comes into play.
 
-RxJS has another operator `shareReplay` which would cover this issue. However, it doesn't play nicely with the way that React works: when the source completes it will keep the last values in memory indefinitely, and replay it back when a new subscription is made, without re-subscribing to the source. This not only exposes a possible memory leak, but also makes it impossible to replay e.g. a fetch call once it has already resolved.
+RxJS has another operator `shareReplay` which would cover this issue. However, it doesn't play nicely with the way that React works: when the source completes it will keep the last values in memory indefinitely, which would cause a possible memory leak.
 
 So that's why React-RxJS provides `shareLatest`. In essence, it addresses the issue of sharing the state between many components and keeping always the latest value, but without the additional issues that `shareReplay` exposes for this particular use case. So with React-RxJS our example would become:
 
@@ -106,7 +106,6 @@ The main function of React-RxJS, `bind`, uses this operator on every stream. `bi
 - Leveraging Error Boundaries to allow graceful error recovery.
 - Performance optimizations, making sure React doesn't update when it doesn't need to.
 - Manages a cache of parametric observables (when using the factory overload).
-- Delays unsubscriptions from hooks to keep the stream alive between re-renders.
 
 If we use bind instead, our example will become:
 
@@ -127,6 +126,8 @@ Something important to note, though, is that the subscription will happen as soo
 For this reason, it's important to understand that these streams only represent state. React can subscribe to any of these at any time to read the state. If the subscription is alive at that moment, then it will receive the latest value, but if it isn't, a new subscription will be made (possibly making a request to the server).
 
 If you want to keep one of these streams alive for as long as you need, React-RxJS also exposes `useSubscribe(stream)` and `<Subscribe source$={stream}>{ content }</Subscribe>`, which will render `{ content }` only after it subscribed to `stream`.
+
+With the mental model of streams as a state, it's also worth noting that the observables returned by `bind` don't complete: If the source of that observable completes, it will keep the last value and replay it back to new subscribers, as a completion on the source means that there won't be more changes to that stream. Remember that if the subscriber count reaches 0, this state will be cleaned off and the subscription will restart when a new observer subscribes later on.
 
 ## Composing streams
 

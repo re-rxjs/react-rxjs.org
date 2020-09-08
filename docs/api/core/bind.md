@@ -6,8 +6,9 @@ sidebar_label: bind()
 Binds an Observable to React, and returns a hook and shared stream representing the source Observable.
 
 ```ts
-function bind<T>(observable: Observable<T>): 
-  [() => Exclude<T, typeof SUSPENSE>, Observable<T>];
+function bind<T>(
+  observable: Observable<T>,
+): [() => Exclude<T, typeof SUSPENSE>, Observable<T>]
 ```
 
 #### Arguments
@@ -22,27 +23,29 @@ function bind<T>(observable: Observable<T>):
    Observable doesn't synchronously emit a value upon the first subscription, then
    the hook will leverage React Suspense while it's waiting for the first value.
 
-2. A [`shareLatest`] version of the source Observable. It can be used for composing other
-   streams that depend on it. The shared subscription is closed as soon as there
-   are no subscribers to that Observable.
+2. The shared Observable that the hook uses: It also replays back the latest
+   value emitted. It can be used for composing other streams that depend on it.
+
+Note that bind doesn't propagate completions from the source stream - The shared
+subscription is closed as soon as there are no subscribers to that Observable.
 
 ### Example
 
 ```tsx
-import { scan, startWith } from 'rxjs/operators'
-import { bind } from '@react-rxjs/core'
+import { scan, startWith } from "rxjs/operators"
+import { bind } from "@react-rxjs/core"
 
 const [useCounter, counter$] = bind(
   clicks$.pipe(
     scan((prev) => prev + 1, 0),
-    startWith(0)
-  )
-);
+    startWith(0),
+  ),
+)
 
 function CounterDisplay() {
-  const counter = useCounter();
+  const counter = useCounter()
 
-  return <div>{counter}</div>;
+  return <div>{counter}</div>
 }
 ```
 
@@ -51,14 +54,15 @@ function CounterDisplay() {
 Binds an Observable factory function to React, and returns a hook and shared stream representing the created Observables.
 
 ```ts
-function bind<A extends unknown[], O>(getObservable: (...args: A) => Observable<O>): 
-  [(...args: A) => Exclude<O, typeof SUSPENSE>, (...args: A) => Observable<O>];
+function bind<A extends unknown[], O>(
+  getObservable: (...args: A) => Observable<O>,
+): [(...args: A) => Exclude<O, typeof SUSPENSE>, (...args: A) => Observable<O>]
 ```
 
 #### Arguments
 
-- `getObservable`: Factory of Observables. The arguments of this function 
-   will be the ones used in the hook.
+- `getObservable`: Factory of Observables. The arguments of this function
+  will be the ones used in the hook.
 
 #### Returns
 
@@ -69,32 +73,24 @@ function bind<A extends unknown[], O>(getObservable: (...args: A) => Observable<
    If the Observable doesn't synchronously emit a value upon the first subscription, then
    the hook will leverage React Suspense while it's waiting for the first value.
 
-2. A [`shareLatest`] version of the Observable returned by the factory function. It
-   can be used for composing other streams that depend on it. The shared subscription
-   is closed as soon as there are no subscribers to that Observable.
-
+2. The factory function that returns the shared Observable that the hook uses
+   for the specific arguments. It can be used for composing other streams that depend on it.
 
 ### Example
 
 ```tsx
 const [useStory, getStory$] = bind((storyId: number) =>
-  getStoryWithUpdates$(storyId)
-);
+  getStoryWithUpdates$(storyId),
+)
 
 const Story: React.FC<{ id: number }> = ({ id }) => {
-  const story = useStory(id);
+  const story = useStory(id)
 
   return (
     <article>
       <h1>{story.title}</h1>
       <p>{story.description}</p>
     </article>
-  );
-};
+  )
+}
 ```
-
-## See also
-
-* [`shareLatest()`](shareLatest)
-
-[`shareLatest`]: shareLatest
