@@ -27,6 +27,12 @@ module.exports = {
           position: "left",
         },
         {
+          to: "docs/api/core/bind",
+          activeBasePath: "docs",
+          label: "API",
+          position: "left",
+        },
+        {
           href: "https://github.com/re-rxjs/react-rxjs",
           label: "GitHub",
           position: "right",
@@ -62,7 +68,7 @@ module.exports = {
             },
             {
               label: "Twitter",
-              href: "https://twitter.com/react-rxjs",
+              href: "https://twitter.com/ReactRxJS",
             },
           ],
         },

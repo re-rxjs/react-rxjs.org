@@ -4,14 +4,18 @@ title: Github Issues example
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+:::note Important
+This tutorial assumes you are already familiar with both: RxJS and React.
+:::
+
 For this tutorial we will be borrowing the [Github issues example that it's taught
 on the Advanced Tutorial of the Redux Toolkit](https://redux-toolkit.js.org/tutorials/advanced-tutorial).
 
 It's a great example because it starts with a plain React application and it then
 teaches how to migrate that application to Redux using the RTK. One of the many good
 things about that tutorial is that it teaches the reader the mental models that RTK
-wants to create in order to manage state efficiently with their library. We will
-try to do the same thing in this tutorial.
+wants to create in order to manage state efficiently with their library. In this
+tutorial we will try to follow the same approach.
 
 ## Reviewing the Starting Example Application
 
@@ -33,17 +37,18 @@ Let's start by viewing the original plain React app in action:
      sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"
 ></iframe>
 
-It's worth noting that there are a couple of tiny bugs (or annoyances) with this React implementation:
+It's worth noting that there are a couple of tiny bugs (or annoyances) with this
+React implementation:
 
 - Changing the "Issues Page" number and jumping to that page updates the highlighted
   pagination number that's on the footer. However, changing the pagination number through
   the footer does not update the pagination number at the top.
 
-- When the user loads a different repo, the issues page doesn't go back to the first one,
+- When the user loads a different repo, the issues page doesn't go back to the first page,
   which is problematic because if the user was looking at page 5 of the initial repo
   and then tries to go to a different repo which doesn't have as many pages, then
   the results don't load properly. We think that it would be desirable to go back
-  to the first page whenever the the user loads a different repo
+  to the first page whenever the user loads a different repo
 
 We will be addressing these issues as we migrate the initial code to react-rxjs.
 
@@ -889,7 +894,7 @@ With this, we've managed to:
 - Used two of the newest React techniques to declare loading and error states.
 - Reduce boilerplate: the net diff shows a negative number of lines.
 
-### Code splitting
+## Bonus: Code splitting
 
 It's worth noting as another advantage, that in this example we've decided to
 have the all the state definition in a single file, as the example is small
@@ -1036,4 +1041,7 @@ load" />
 We can see that it weighs less, and so it also takes less time to load: About
 20kB (40kB uncompressed) less and 12% faster. Although we didn't move 40kB of
 minified code in a separate chunk, we reached this value because webpack
-performs tree-shaking, and all those dependencies that were used blah blah
+performs tree-shaking. That means that things like the 2 calls to the API
+that are only done from the `IssuesDetailsPage` component or the RxJS operators
+that are only being used for the `IssuesDetailsPage` were also excluded from
+the main chunk.

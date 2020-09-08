@@ -9,13 +9,13 @@ import CharacterCounter from "./examples/CharacterCounter"
 React-RxJS is published in npm as `@react-rxjs/core`
 
 ```sh
-npm i @react-rxjs/core
+npm i rxjs @react-rxjs/core
 ```
 
 or using yarn
 
 ```sh
-yarn add @react-rxjs/core
+yarn add rxjs @react-rxjs/core
 ```
 
 ## Create a hook from an observable
@@ -85,4 +85,5 @@ This is shown as:
 
 ## Next steps
 
-We strongly recommend reading through [core concepts](core-concepts.md) to understand the mindset of this library.
+We strongly recommend reading through [core concepts](core-concepts.md) to
+understand the mindset of this library.
