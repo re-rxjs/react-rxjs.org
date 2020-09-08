@@ -1,5 +1,6 @@
 ---
 title: suspend(observable)
+sidebar_label: suspend()
 ---
 
 A RxJS creation operator that prepends a [`SUSPENSE`] to the source Observable.

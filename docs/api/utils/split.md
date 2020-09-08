@@ -14,7 +14,7 @@ function split<T, K>(keySelector: (value: T) => K, streamSelector?: (grouped: Ob
 #### Arguments
 
 - `keySelector`: A function that receives an item and returns the key of that item's group.
-- `streamSelector`: (Optional, default = identity). The function to apply to each grouped Observable.
+- `streamSelector`: (Optional) The function to apply to each grouped Observable. Default: identity.
 
 #### Returns
 
@@ -31,6 +31,7 @@ Observable through the `streamSelector` argument.
 ## See also
 * [`collect(filter)`](collect)
 * [`collectValues()`](collectValues)
+* [Todo App Tutorial](../../tutorial/todos#creating-a-stream-for-each-todo)
 
 [pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
 [OperatorFunction]: https://rxjs-dev.firebaseapp.com/api/index/interface/OperatorFunction

@@ -13,9 +13,9 @@ function collect<K, V>(filter?: (grouped: GroupedObservable<K, V>) => Observable
 
 #### Arguments
 
-- `filter?`: (Optional, default = undefined). A function that receives the inner 
+- `filter?`: (Optional) A function that receives the inner 
   Observable and returns an Observable of boolean values, which indicates 
-  whether the inner Observable should be collected.
+  whether the inner Observable should be collected. Default: `undefined`.
 
 #### Returns
 

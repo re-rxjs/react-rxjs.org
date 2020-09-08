@@ -1,21 +1,20 @@
 ---
-title: Github Issues example
+title: Github Issues Viewer
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 :::note Important
-This tutorial assumes you are already familiar with both: RxJS and React.
+This tutorial assumes you are already familiar with both RxJS and React.
 :::
 
-For this tutorial we will be borrowing the [Github issues example that it's taught
-on the Advanced Tutorial of the Redux Toolkit](https://redux-toolkit.js.org/tutorials/advanced-tutorial).
+For this tutorial we will be borrowing the [Github issues example that is taught
+in the Advanced Tutorial of the Redux Toolkit](https://redux-toolkit.js.org/tutorials/advanced-tutorial).
 
 It's a great example because it starts with a plain React application and it then
-teaches how to migrate that application to Redux using the RTK. One of the many good
-things about that tutorial is that it teaches the reader the mental models that RTK
-wants to create in order to manage state efficiently with their library. In this
-tutorial we will try to follow the same approach.
+shows how to migrate that application to Redux using the Redux Toolkit (RTK). One of the many good
+things about the tutorial, is that it illustrates the mental models required to manage 
+state efficiently with RTK. In this tutorial we will try to follow the same approach.
 
 ## Reviewing the Starting Example Application
 
@@ -40,17 +39,17 @@ Let's start by viewing the original plain React app in action:
 It's worth noting that there are a couple of tiny bugs (or annoyances) with this
 React implementation:
 
-- Changing the "Issues Page" number and jumping to that page updates the highlighted
-  pagination number that's on the footer. However, changing the pagination number through
+- Changing the "Issues Page" number and jumping to that page will highlight the
+  pagination number on the footer. However, changing the pagination number through
   the footer does not update the pagination number at the top.
 
 - When the user loads a different repo, the issues page doesn't go back to the first page,
-  which is problematic because if the user was looking at page 5 of the initial repo
-  and then tries to go to a different repo which doesn't have as many pages, then
+  which is problematic: If the user was looking at page 5 of the initial repo
+  and then tries to go to a different repo which doesn't have as many pages,
   the results don't load properly. We think that it would be desirable to go back
-  to the first page whenever the user loads a different repo
+  to the first page whenever the user loads a different repo.
 
-We will be addressing these issues as we migrate the initial code to react-rxjs.
+We will be addressing these issues as we migrate the initial code to React-RxJS.
 
 ### React Codebase Source Overview
 
@@ -76,7 +75,7 @@ For this tutorial we will need the following dependencies:
   abstraction to build them, by declaring a fallback component and recovery strategy,
   in a similar way to Suspense Boundaries.
 
-Also we are not going to need Axios, because we will be using `rxjs/ajax` instead.
+Also, we are not going to need Axios, because we will be using `rxjs/ajax` instead.
 
 ### Refactor API: Axios -> RxJS
 
@@ -171,37 +170,37 @@ of Axios. It's a pretty straightforward change:
 ## Identifying the state of the App
 
 Now that we have everything ready, let's think for a moment about the state of
-this App. Luckily for us, there is not a lot of it. So, let's represent the different
+this app. Luckily for us, there is not a lot of it. So, let's represent the different
 state entities and their relations on a diagram:
 
 <img src={useBaseUrl('img/github-issues-dependencies.png')}
-alt="A diagram that represents the relations of the entities, at the top we have the user inputs
-followed by those states that depend on them directly and one level below we have those states
-that depend on other states" />
+alt="A diagram that represents the relations of the entities. At the top we have the user inputs,
+followed by those states that depend on them directly. One level below we have those states
+that depend on other states." />
 
 At the very top we have the different events that can happen. The 3 different user interactions:
 
 - Changing the repo
 - Changing the page
-- selecting / unselecting an issue
+- Selecting / unselecting an issue
 
 These are the events that will propagate changes to our state entities.
 
 Then we have the following state entities:
 
-- **"Current repo & page"**: since the page and the repo are very tightly coupled, it makes
+- **"Current repo & page"**: Since the page and the repo are very tightly coupled, it makes
   sense to have an entity that represents the current state of the both of them. This entity
   depends on 2 different user interactions: changing the repo and changing the page.
 
-- From this entity we can easily derive the **"list of issues"** and the **"current page"**
+- From this entity we can easily derive the **"list of issues"** and the **"current page"**.
 
-- We also have the **"# of open issues"** which depends on the "changing repo" event
+- We also have the **"# of open issues"** which depends on the "changing repo" event.
 
 - Then there is the **"issue details"** which will change whenever the user selects/unselects an issue.
 
 - And finally we have the **"issue comments"** which depend on the "issue details".
 
-That's it. That's all the App-level state. It's worth pointing out that the UI
+That's it. That's all the app-level state. It's worth pointing out that the UI
 doesn't allow the user to change the repo or the page while there is a selected issue.
 
 ## Defining the state of the App
@@ -211,13 +210,13 @@ let's create the necessary React hooks.
 
 One nice thing about Reactive Programming is that it's possible to declare state
 in a way that reads from top to bottom. That's because each state entity is only
-coupled to the entities that it depends from.
+coupled to the entities that it depends on.
 
-In order to illustrate that, we will be putting all the state of this App on the
+In order to illustrate that, we will be putting all the state of this app in the
 same file. Normally, it would be better to break this file down into smaller
-pieces and to collocate each piece closer to where it is being used, though.
+pieces and to co-locate each piece closer to where it is being used.
 
-Let's first define and export the default states of the App:
+Let's first define and export the default states of the app:
 
 ```ts
 export const INITIAL_ORG = "rails"
@@ -247,7 +246,8 @@ export const onIssueUnselecteed = () => {
 ```
 
 Now that we already have the top-level streams, let's create a stream that represents
-the "current repo and page" entity. We want to reset the page to 1 when the selected repo changes, so we can represent this behavior with `merge`:
+the "current repo and page" entity. We want to reset the page to 1 when the selected repo changes, 
+so we can represent this behavior with `merge`:
 
 ```ts
 export const [useCurrentRepo, currentRepo$] = bind(
@@ -277,7 +277,7 @@ const currentRepoAndPage$ = merge(
 ).pipe(shareLatest())
 ```
 
-From this stream we can extract the current page
+From this stream we can extract the current page:
 
 ```ts
 export const [useCurrentPage] = bind(currentRepoAndPage$.pipe(pluck("page")))
@@ -286,10 +286,10 @@ export const [useCurrentPage] = bind(currentRepoAndPage$.pipe(pluck("page")))
 And following our model, the list of issues also depends on this stream, but the
 list of issues needs to be loaded from the API.
 
-In this example we also want to use React's Suspense: When the user changes repo
-or page, while the new issue list is loading we want to show a suspended state
+In this example we also want to use React Suspense: When the user changes the repo
+or page, we want to show a suspended state while the new issue list is loading 
 (i.e. "Loading issues..."). The way we can do this, is by emitting the
-`SUSPENSE` symbol, that means that there's data being loaded in this stream.
+[`SUSPENSE`](../api/core/suspense) symbol, that means that there's data being loaded in this stream.
 This can be expressed reactively as:
 
 ```ts
@@ -302,8 +302,8 @@ export const [useIssues, issues$] = bind(
 )
 ```
 
-This way every time the current repo or page changes, useIssues will send
-another query to the API to keep everything up-to-date, suspending the
+This way, every time the current repo or page changes, the `useIssues` hook
+will send another query to the API to keep everything up to date, suspending the
 component(s) that depend on it while it's fetching the new values.
 
 We can use the same pattern to retrieve the number of open issues:
@@ -321,12 +321,12 @@ export const [useOpenIssuesLen, openIssuesLen$] = bind(
 Now, we want to have both `issues$` and `openIssuesLen$` subscriptions alive
 throughout the lifetime of the app, because it might happen that the components
 that need these values are not rendered until it's too late. To solve this, we
-could use `useSubscribe` or `<Subscribe />` in the top-level component, but
+could use [`useSubscribe`](../api/core/useSubscribe) or [`<Subscribe />`](../api/core/subscribe) in the top-level component, but
 we'll just do it in here as a top-level subscription to keep it simple.
 
-We need to also think on a recovery strategy to make sure this subscription
+We need to also think of a recovery strategy to make sure this subscription
 doesn't end if there's an error. In our case, we will recover when either the
-current repo or page changes.
+current repo or page changes:
 
 ```ts
 merge(issues$, openIssuesLen$)
@@ -334,9 +334,9 @@ merge(issues$, openIssuesLen$)
   .subscribe()
 ```
 
-And lastly we need to declare the state for when an issue is selected: Following
-a similar logic, we need to load the issue details when an issue is selected,
-and its comments.
+And lastly we need to declare the state when an issue is selected: Following
+similar logic, we need to load the issue details when an issue is selected,
+as well as its comments:
 
 ```ts
 export const [useSelectedIssueId, selectedIssueId$] = bind(
@@ -362,14 +362,14 @@ export const [useIssueComments, issueComments$] = bind(
 ```
 
 As this pattern of `switchMap` and `startWith(SUSPENSE)` is something that's
-often used, react-rxjs exports `switchMapSuspended` in `@react-rxjs/utils` that
-makes it sightly less verbose.
+often used, react-rxjs exports [`switchMapSuspended`](../api/utils/switchMapSuspended) 
+in `@react-rxjs/utils` that makes it sightly less verbose.
 
 Here we also need to create a subscription to `issueComments$` for a similar
 reason: The component that will subscribe to this stream might do it after
 `issueSelected$` emits, so it would be too late. Notice that by just subscribing
 to `issueComment$`, all the streams that depend on it will also get a
-subscription.
+subscription:
 
 ```ts
 issueComments$.pipe(retryWhen(() => selectedIssueId$.pipe(skip(1)))).subscribe()
@@ -377,7 +377,7 @@ issueComments$.pipe(retryWhen(() => selectedIssueId$.pipe(skip(1)))).subscribe()
 
 ## Wiring things up!
 
-Now that we already have all the application state declared, we can wire it up
+Now that we have all the application state declared, we can wire it up
 with the components.
 
 ### Main App Component
@@ -418,14 +418,14 @@ export default App
 ```
 
 With Suspense, we don't need to manage the loading states by ourselves - React
-will. This added to the fact that the state is lifted out lets the original
-App to be simplified to a couple of simple components.
+will. This, coupled with the fact that the state can be lifted out, allows us to simplify
+the original app to a couple of simple components.
 
 ### RepoSearchForm
 
 For the "search repository" form, by having the state in a separate file, we can
-just import those bits that we need directly and this way the parent doesn't
-need to get coupled to values that it doesn't need.
+just import those bits that we need directly, and this way the parent doesn't
+need to get coupled to values that it doesn't need:
 
 ```diff
 -import React, { useState, ChangeEvent } from 'react'
@@ -492,18 +492,18 @@ need to get coupled to values that it doesn't need.
 The page for the list of issues is also [greatly simplified](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/0ecad5f387413e70a4a65739f95538dac8f1a666#diff-86b21025fd105e75d28d28541f8288b5),
 because all the state management on this part is already done, and it turns out
 that this component is not the consumer of any of the state it managed - The
-consumers are their children, which they will access whatever they need.
+consumers are their children, which will access whatever they need themselves.
 
 This component still has a responsibility though: to catch any error that would
-happen on fetch and show a fallback UI. React-RxJS lets us use ErrorBoundaries,
+happen on fetch, and show a fallback UI. React-RxJS lets us use ErrorBoundaries,
 not only for the regular errors that happen within React's Components, but also
 for those errors that are generated in a stream.
 
-What will happen is that if a component uses a stream that emits an error, it
+What will happen is that, if a component uses a stream that emits an error, it
 will propagate that error to the nearest error boundary. If that happens, the
 Error Boundary will show the fallback UI, and we can decide how to recover. In
 our case, we want to show the components when the user selects another
-repository or another page, so we can set this up easily by using a `useEffect`.
+repository or another page, so we can set this up easily by using a `useEffect`:
 
 ```tsx
 import React, { useEffect } from "react"
@@ -544,9 +544,9 @@ export const IssuesListPage = () => {
 
 #### IssuesPageHeader
 
-For the header, we can get rid of its props (as now it's state we already have
-declared), and we will also take the chance to represent the loading state by
-using React's Suspense.
+For the header, we can get rid of its props (as we have already declared its state), 
+and we will also take the chance to represent the loading state by
+using React's Suspense:
 
 ```diff
 -import React from 'react'
@@ -616,7 +616,7 @@ using React's Suspense.
 
 #### IssuePagination
 
-Same logic applies for the pagination component:
+The same logic applies for the pagination component:
 
 ```diff
 -import React from 'react'
@@ -711,17 +711,17 @@ And the list:
 When react renders `IssuesListLoaded`, it will call `useIssues()`,
 which internally will subscribe to the stream, and start fetching the value
 from GitHub's API. As that value won't be resolved immediately, the component
-will be put in Suspense until we get a response back from the server.
+will be put in suspense until we get a response back from the server.
 
 At that point, the component will exit suspense and `issues` will have
 the value expected.
 
 Then, when the user changes to another repo or page, `useIssues()` will put
-the component in Suspense again until the new request has loaded.
+the component in suspense again until the new request has loaded.
 
 ### IssueDetailsPage
 
-In here, also by using Error boundaries and suspense, we can break down this
+Here, by also using error boundaries and suspense, we can break down this
 component into smaller ones. There are [too many changes](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/0ecad5f387413e70a4a65739f95538dac8f1a666#diff-1a799039b78ec6f0b5ab3f324755c673)
 to be able to follow this, but the result would be:
 
@@ -827,7 +827,7 @@ export default IssueDetailsPage
 
 And lastly for the comments of the selected issue, we can also just grab the
 hook from where we declared the state and use it. Because of Suspense, we again
-don't need to handle the loading case in here.
+don't need to handle the loading case.
 
 ```diff
  import ReactMarkdown from 'react-markdown'
@@ -896,20 +896,20 @@ With this, we've managed to:
 
 ## Bonus: Code splitting
 
-It's worth noting as another advantage, that in this example we've decided to
-have the all the state definition in a single file, as the example is small
-enough and it's easier to explain. However, in a real application you can split
-and collocate the state to each of the relevant bits of your application, and it
-will play nice with code-splitting if you were to use lazy imports. Let's
+As another advantage, it's worth noting that in this example we've decided to
+keep all the state defined in a single file: The example is small
+enough, and it's easier to explain this way. However, in a real application you can split
+and co-locate the state in each of the relevant parts of your application, and it
+will play nicely with code-splitting, if you were to use lazy imports. Let's
 quickly try this to see how it plays a big role in load time.
 
-For this example, one bit of the application that can be split from the main
-app is the page for issue details: That page won't be needed until the user
+For this example, one part of the application that can be split from the main
+app is the page for issue details: It won't be needed until the user
 clicks on one of the issues, so it's a perfect starting point.
 
-With React-RxJS we can just move those streams that are only used by that page
-in a separate file. Let's put it next to where it will be used, the
-IssuesDetailsPage and IssuesComments components:
+With React-RxJS we can just move the streams that are only used by that page
+into a separate file. Let's put it next to where it will be used, the
+`IssuesDetailsPage` and `IssuesComments` components:
 
 ```ts
 import {
@@ -950,7 +950,7 @@ export const [useIssueComments, issueComments$] = bind(
 issueComments$.pipe(retryWhen(() => selectedIssueId$.pipe(skip(1)))).subscribe()
 ```
 
-Then we only need to update the imports for those components to use this file
+Then we only need to update the imports for those components to use the above file
 instead:
 
 ```diff
@@ -1019,12 +1019,12 @@ And use a lazy import with Suspense in App:
  )
 ```
 
-Now let's compare the speed between the original version with react state
-without code splitting and the one with React-RxJS optimised. Looking at the
-Network tab with 3G for react-state:
+Now let's compare the speed between the original version without code splitting 
+and the one that we have optimised with React-RxJS. Looking at the
+Chrome Network tab with 3G for react-state:
 
 <img src={useBaseUrl('img/react-state-network-size.png')}
-alt="A screenshot of chrome's Network tab for react-state. Shows the main
+alt="A screenshot of Chrome's Network tab for react-state. Shows the main
 waterfall chunk is a JS file of 76.8kB (240kB uncompressed), taking 3.71s to
 load" />
 
@@ -1034,14 +1034,14 @@ completely loaded weighs 76.8kB compressed (240kB uncompressed), and it took
 splitting:
 
 <img src={useBaseUrl('img/react-rxjs-network-size.png')}
-alt="A screenshot of chrome's Network tab for react-state. Shows the main
+alt="A screenshot of Chrome's Network tab for react-state. Shows the main
 waterfall chunk is a JS file of 58.6kB (193kB uncompressed), taking 3.31s to
 load" />
 
 We can see that it weighs less, and so it also takes less time to load: About
 20kB (40kB uncompressed) less and 12% faster. Although we didn't move 40kB of
-minified code in a separate chunk, we reached this value because webpack
-performs tree-shaking. That means that things like the 2 calls to the API
-that are only done from the `IssuesDetailsPage` component or the RxJS operators
-that are only being used for the `IssuesDetailsPage` were also excluded from
+minified code into a separate chunk, we reached this value because webpack
+performs tree-shaking. This means that things like the 2 API calls
+that are only done from the `IssuesDetailsPage` component, or the RxJS operators
+that are only being used for the `IssuesDetailsPage`, were also excluded from
 the main chunk.

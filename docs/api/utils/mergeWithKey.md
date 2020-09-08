@@ -20,10 +20,10 @@ function mergeWithKey<
 
 #### Arguments
 
-- `inputObject`: Object of streams
+- `inputObject`: An object that contains multiple streams, indexed by key.
 - `concurrent`: (Optional) Maximum number of input Observables being subscribed
 to concurrently. Default: `Number.POSITIVE_INFINITY`
-- `scheduler`: (Optional) The `SchedulerLike` to use for managing concurrency
+- `scheduler`: (Optional) The [`SchedulerLike`] to use for managing concurrency
 of input Observables. Default: `null`.
 
 #### Returns
@@ -63,3 +63,8 @@ const counter$ = mergeWithKey({
   startWith(0),
 )
 ```
+## See also
+* [`merge`](https://rxjs-dev.firebaseapp.com/api/index/function/merge) (RxJS)
+* [Todo App Tutorial](../../tutorial/todos#creating-a-single-stream-for-all-the-user-events)
+
+[`SchedulerLike`]: https://rxjs-dev.firebaseapp.com/api/index/interface/SchedulerLike
