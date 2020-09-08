@@ -28,5 +28,5 @@ for matches each key.
 * [`split(keySelector)`](split)
 
 [pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
-[`GroupedObservable`]: https://rxjs-dev.firebaseapp.com/api/index/class/GroupedObservable
-[OperatorFunction]: https://rxjs-dev.firebaseapp.com/api/index/interface/OperatorFunction
+[`GroupedObservable`]: https://rxjs.dev/api/index/class/GroupedObservable
+[OperatorFunction]: https://rxjs.dev/api/index/interface/OperatorFunction

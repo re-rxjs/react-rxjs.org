@@ -31,6 +31,6 @@ const story$ = selectedStoryId$.pipe(switchMapSuspended(getStory$))
 * [`switchMap`], [`startWith`] (RxJS)
 
 [`SUSPENSE`]: ../core/suspense
-[`switchMap`]: https://rxjs-dev.firebaseapp.com/api/operators/switchMap
-[`startWith`]: https://rxjs-dev.firebaseapp.com/api/operators/startWith
-[OperatorFunction]: https://rxjs-dev.firebaseapp.com/api/index/interface/OperatorFunction
+[`switchMap`]: https://rxjs.dev/api/operators/switchMap
+[`startWith`]: https://rxjs.dev/api/operators/startWith
+[OperatorFunction]: https://rxjs.dev/api/index/interface/OperatorFunction
