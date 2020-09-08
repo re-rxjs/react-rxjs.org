@@ -318,19 +318,20 @@ export const [useOpenIssuesLen, openIssuesLen$] = bind(
 )
 ```
 
-Now, we want to have both `issues$` and `openIssuesLen$` subscriptions alive
-throughout the lifetime of the app, because it might happen that the components
-that need these values are not rendered until it's too late. To solve this, we
-could use [`useSubscribe`](../api/core/useSubscribe) or [`<Subscribe />`](../api/core/subscribe) in the top-level component, but
-we'll just do it in here as a top-level subscription to keep it simple.
+Now, since `issues$` and `openIssuesLen$` are observables that trigger side-effects,
+it's important that their initial subscriptions happen before react renders the
+components that depend on them. That's why we are going to define a top-level
+subscription that ensures that.
 
-We need to also think of a recovery strategy to make sure this subscription
-doesn't end if there's an error. In our case, we will recover when either the
-current repo or page changes:
+We need to also make sure that an error won't close this top-level subscription:
 
 ```ts
-merge(issues$, openIssuesLen$)
-  .pipe(retryWhen(() => currentRepoAndPage$.pipe(skip(1))))
+currentRepoAndPage$
+  .pipe(
+    switchMapTo(
+      merge(issues$, openIssuesLen$).pipe(catchError(() => EMPTY))
+    )
+  )
   .subscribe()
 ```
 
@@ -365,14 +366,15 @@ As this pattern of `switchMap` and `startWith(SUSPENSE)` is something that's
 often used, react-rxjs exports [`switchMapSuspended`](../api/utils/switchMapSuspended) 
 in `@react-rxjs/utils` that makes it sightly less verbose.
 
-Here we also need to create a subscription to `issueComments$` for a similar
-reason: The component that will subscribe to this stream might do it after
-`issueSelected$` emits, so it would be too late. Notice that by just subscribing
-to `issueComment$`, all the streams that depend on it will also get a
-subscription:
+Here we also need to create a subscription to `issueComments$` in order to ensure
+that the first subscription happens before react renders the components that
+depend on it. Notice that by just subscribing to `issueComment$`, all the streams
+that depend on it will also get a subscription:
 
 ```ts
-issueComments$.pipe(retryWhen(() => selectedIssueId$.pipe(skip(1)))).subscribe()
+selectedIssueId$
+  .pipe(switchMapTo(issueComments$.pipe(catchError(() => EMPTY))))
+  .subscribe()
 ```
 
 ## Wiring things up!
@@ -382,7 +384,7 @@ with the components.
 
 ### Main App Component
 
-The [diff of this component is so brutal](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/0ecad5f387413e70a4a65739f95538dac8f1a666#diff-34456421648850188ad56fcd6df47b2b)
+The [diff of this component is so brutal](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/d3932f4cf64943e831fc710638669ce3fca75d84#diff-34456421648850188ad56fcd6df47b2b)
 that it's best to show how the code looks with react-rxjs:
 
 ```tsx
@@ -489,7 +491,7 @@ need to get coupled to values that it doesn't need:
 
 ### IssuesListPage
 
-The page for the list of issues is also [greatly simplified](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/0ecad5f387413e70a4a65739f95538dac8f1a666#diff-86b21025fd105e75d28d28541f8288b5),
+The page for the list of issues is also [greatly simplified](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/d3932f4cf64943e831fc710638669ce3fca75d84#diff-86b21025fd105e75d28d28541f8288b5),
 because all the state management on this part is already done, and it turns out
 that this component is not the consumer of any of the state it managed - The
 consumers are their children, which will access whatever they need themselves.
@@ -722,7 +724,7 @@ the component in suspense again until the new request has loaded.
 ### IssueDetailsPage
 
 Here, by also using error boundaries and suspense, we can break down this
-component into smaller ones. There are [too many changes](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/0ecad5f387413e70a4a65739f95538dac8f1a666#diff-1a799039b78ec6f0b5ab3f324755c673)
+component into smaller ones. There are [too many changes](https://github.com/re-rxjs/react-rxjs-github-issues-example/commit/d3932f4cf64943e831fc710638669ce3fca75d84#diff-1a799039b78ec6f0b5ab3f324755c673)
 to be able to follow this, but the result would be:
 
 ```tsx
@@ -912,13 +914,14 @@ into a separate file. Let's put it next to where it will be used, the
 `IssuesDetailsPage` and `IssuesComments` components:
 
 ```ts
+import { EMPTY } from "rxjs"
 import {
   startWith,
   withLatestFrom,
   filter,
+  switchMapTo,
+  catchError,
   switchMap,
-  retryWhen,
-  skip,
 } from "rxjs/operators"
 import { bind, SUSPENSE } from "@react-rxjs/core"
 import { Issue, getIssue, getComments } from "api/githubAPI"
@@ -947,7 +950,9 @@ export const [useIssueComments, issueComments$] = bind(
   ),
 )
 
-issueComments$.pipe(retryWhen(() => selectedIssueId$.pipe(skip(1)))).subscribe()
+selectedIssueId$
+  .pipe(switchMapTo(issueComments$.pipe(catchError(() => EMPTY))))
+  .subscribe()
 ```
 
 Then we only need to update the imports for those components to use the above file
