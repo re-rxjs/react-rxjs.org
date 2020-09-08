@@ -21,12 +21,16 @@ function mergeWithKey<
 #### Arguments
 
 - `inputObject`: Object of streams
-- `concurrent`: (Optional) **TODO**
-- `scheduler`: (Optional) **TODO**
+- `concurrent`: (Optional) Maximum number of input Observables being subscribed
+to concurrently. Default: `Number.POSITIVE_INFINITY`
+- `scheduler`: (Optional) The `SchedulerLike` to use for managing concurrency
+of input Observables. Default: `null`.
 
 #### Returns
 
-`Observable<OT[keyof O]>`: **TODO**
+`Observable<OT[keyof O]>`: An observable that emits a flux-like object that contains 2 properties:
+- `key`: they key of the stream that has emitted.
+- `payload`: the emitted value.
 
 ### Example
 

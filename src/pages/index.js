@@ -1,18 +1,18 @@
-import React from "react";
-import clsx from "clsx";
-import Layout from "@theme/Layout";
-import Link from "@docusaurus/Link";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import useBaseUrl from "@docusaurus/useBaseUrl";
-import styles from "./styles.module.css";
+import React from "react"
+import clsx from "clsx"
+import Layout from "@theme/Layout"
+import Link from "@docusaurus/Link"
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext"
+import useBaseUrl from "@docusaurus/useBaseUrl"
+import styles from "./styles.module.css"
 
 const features = [
   {
     title: <>Truly reactive</>,
     description: (
       <>
-        With React-RxJS you will be able to express the dynamic behavior of your
-        app's state completely at the time of its definition.
+        React-RxJS allows you to express the dynamic behavior of your app's
+        state completely at the time of its definition.
       </>
     ),
   },
@@ -41,16 +41,15 @@ const features = [
           observables
         </Link>{" "}
         enables a highly performant state propagation system based on forward
-        referencing subscriptions. It also prevents memory leaks, and it can be
-        a powerful tool for dealing complex caches.
+        referencing subscriptions.
       </>
     ),
   },
   ,
-];
+]
 
 function Feature({ imageUrl, title, description }) {
-  const imgUrl = useBaseUrl(imageUrl);
+  const imgUrl = useBaseUrl(imageUrl)
   return (
     <div className={clsx("col col--4", styles.feature)}>
       {imgUrl && (
@@ -61,23 +60,31 @@ function Feature({ imageUrl, title, description }) {
       <h3>{title}</h3>
       <p>{description}</p>
     </div>
-  );
+  )
 }
 
 function Home() {
-  const context = useDocusaurusContext();
-  const { siteConfig = {} } = context;
+  const context = useDocusaurusContext()
+  const { siteConfig = {} } = context
   return (
     <Layout title={siteConfig.title} description="React bindings for RxJS">
       <header className={clsx("hero hero--primary", styles.heroBanner)}>
         <div className="container">
-          <h1 className="hero__title">{siteConfig.title}</h1>
+          <div className={styles.title}>
+            <img
+              src="img/logo-128.png"
+              alt="React-RxJS logo"
+              width="100"
+              height="100"
+            />
+            <h1 className="hero__title">{siteConfig.title}</h1>
+          </div>
           <p className="hero__subtitle">{siteConfig.tagline}</p>
           <div className={styles.buttons}>
             <Link
               className={clsx(
                 "button button--outline button--secondary button--lg",
-                styles.getStarted
+                styles.getStarted,
               )}
               to={useBaseUrl("docs/getting-started")}
             >
@@ -100,7 +107,7 @@ function Home() {
         )}
       </main>
     </Layout>
-  );
+  )
 }
 
-export default Home;
+export default Home

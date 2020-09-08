@@ -2,7 +2,7 @@
 title: selfDependant()
 ---
 
-An RxJS creation operator for observables that have circular dependencies.
+A utility for creating observables that have circular dependencies.
 
 ```ts
 function selfDependant<T>(): [Observable<T>, () => MonoTypeOperatorFunction<T>];
@@ -12,9 +12,9 @@ function selfDependant<T>(): [Observable<T>, () => MonoTypeOperatorFunction<T>];
 
 `[1, 2]`:
 
-1. An Observable... (**TODO**)
+1. The inner-subject as an Observable.
 
-2. A pipeable operator... (**TODO**)
+2. A pipeable operator that taps into the inner Subject.
 
 ### Example
 

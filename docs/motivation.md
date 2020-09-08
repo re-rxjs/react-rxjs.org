@@ -2,16 +2,19 @@
 title: Motivation
 ---
 
-React is not Reactive. [Richard Harris](https://twitter.com/Rich_Harris) does a
-great job explaining this in his talk [Rethinking Reactivity](https://www.youtube.com/watch?v=AdNJ3fydeao).
-In that talk he borrows the following quote from [Heinrich Apfelmus](https://apfelmus.nfshost.com/),
-which brilliantly defines the essence of functional reactive programming:
+As you probably already know, React's state management system is not Reactive.
+[Richard Harris](https://twitter.com/Rich_Harris) does a great job explaining this
+in his talk [Rethinking Reactivity](https://www.youtube.com/watch?v=AdNJ3fydeao).
+In that same talk Rich borrows the following quote from [Heinrich Apfelmus](https://apfelmus.nfshost.com/),
+which brilliantly defines the essence of Functional Reactive Programming:
 
 > The essence of functional reactive programming is to specify the dynamic
 behavior of a value completely at the time of declaration
 
-Our goal is to bring the essence of reactive programming to React. We do that by
-enabling a state management system based on RxJS streams. No stores. No context.
+The goal of this library is to create a set of bindings that bring this essence
+of Reactive Programming into React. We may not be able to use Svelte's destiny
+operator :shrug:, but we will be able to declare the dynamic behavior of our state
+at the time of its declaration using RxJS streams. No stores. No context.
 Just reactive streams that integrate seamlessly with React.
 
 Working with Reactive solutions has many advantages, among them:
