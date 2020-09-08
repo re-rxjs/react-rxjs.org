@@ -42,6 +42,6 @@ const activePlanetName$ = planet$.pipe(
 * [`shareReplay`] (RxJS)
 
 [`bind`]: bind
-[`shareReplay`]: https://rxjs-dev.firebaseapp.com/api/operators/shareReplay
-[`MonoTypeOperatorFunction<T>`]: https://rxjs-dev.firebaseapp.com/api/index/interface/MonoTypeOperatorFunction
+[`shareReplay`]: https://rxjs.dev/api/operators/shareReplay
+[`MonoTypeOperatorFunction<T>`]: https://rxjs.dev/api/index/interface/MonoTypeOperatorFunction
 [pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators

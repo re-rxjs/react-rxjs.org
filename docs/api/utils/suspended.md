@@ -31,4 +31,4 @@ const story$ = selectedStoryId$.pipe(
 [`SUSPENSE`]: ../core/suspense
 [`suspend`]: suspend
 [pipeable]: https://rxjs.dev/guide/v6/pipeable-operators
-[OperatorFunction]: https://rxjs-dev.firebaseapp.com/api/index/interface/OperatorFunction
+[OperatorFunction]: https://rxjs.dev/api/index/interface/OperatorFunction

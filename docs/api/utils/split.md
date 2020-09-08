@@ -34,4 +34,4 @@ Observable through the `streamSelector` argument.
 * [Todo App Tutorial](../../tutorial/todos#creating-a-stream-for-each-todo)
 
 [pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
-[OperatorFunction]: https://rxjs-dev.firebaseapp.com/api/index/interface/OperatorFunction
+[OperatorFunction]: https://rxjs.dev/api/index/interface/OperatorFunction

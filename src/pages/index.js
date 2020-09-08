@@ -37,7 +37,7 @@ const features = [
     description: (
       <>
         Modeling your state with{" "}
-        <Link to="https://rxjs-dev.firebaseapp.com/guide/observable">
+        <Link to="https://rxjs.dev/guide/observable">
           observables
         </Link>{" "}
         enables a highly performant state propagation system based on forward

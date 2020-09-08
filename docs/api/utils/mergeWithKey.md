@@ -64,7 +64,7 @@ const counter$ = mergeWithKey({
 )
 ```
 ## See also
-* [`merge`](https://rxjs-dev.firebaseapp.com/api/index/function/merge) (RxJS)
+* [`merge`](https://rxjs.dev/api/index/function/merge) (RxJS)
 * [Todo App Tutorial](../../tutorial/todos#creating-a-single-stream-for-all-the-user-events)
 
-[`SchedulerLike`]: https://rxjs-dev.firebaseapp.com/api/index/interface/SchedulerLike
+[`SchedulerLike`]: https://rxjs.dev/api/index/interface/SchedulerLike
