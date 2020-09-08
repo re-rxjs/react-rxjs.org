@@ -1,8 +1,8 @@
 module.exports = {
   title: "React-RxJS",
   tagline: "React bindings for RxJS",
-  url: "https://re-rxjs.github.io",
-  baseUrl: "/react-rxjs.org/",
+  url: "https://react-rxjs.org",
+  baseUrl: "/",
   favicon: "img/favicon.ico",
   organizationName: "re-rxjs", // Usually your GitHub org/user name.
   projectName: "react-rxjs.org", // Usually your repo name.
