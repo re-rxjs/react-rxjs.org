@@ -37,10 +37,8 @@ const features = [
     description: (
       <>
         Modeling your state with{" "}
-        <Link to="https://rxjs.dev/guide/observable">
-          observables
-        </Link>{" "}
-        enables a highly performant state propagation system based on forward
+        <Link to="https://rxjs.dev/guide/observable">observables</Link> enables
+        a highly performant state propagation system based on forward
         referencing subscriptions.
       </>
     ),
@@ -68,6 +66,34 @@ function Home() {
   const { siteConfig = {} } = context
   return (
     <Layout title={siteConfig.title} description="React bindings for RxJS">
+      <div style={{ background: "#111", padding: "10px 0", lineHeight: 2 }}>
+        <div className="container">
+          <div
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            Black Lives Matter.
+            <a
+              style={{
+                display: "inline-block",
+                color: "white",
+                fontWeight: "bold",
+                margin: "0 10px",
+                padding: "7px 20px",
+                border: "1px solid white",
+              }}
+              href="https://support.eji.org/give/153413"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Support the Equal Justice Initiative.
+            </a>
+          </div>
+        </div>
+      </div>
       <header className={clsx("hero hero--primary", styles.heroBanner)}>
         <div className="container">
           <div className={styles.title}>
