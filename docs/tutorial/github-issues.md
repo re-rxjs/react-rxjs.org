@@ -4,12 +4,14 @@ title: Github Issues Viewer
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-:::caution
-This tutorial assumes you are already familiar with both RxJS and React.
+:::info Note
+This tutorial assumes you are already familiar with both [RxJS](https://rxjs.dev) 
+and [React](https://reactjs.org).
 :::
 
-For this tutorial we will be borrowing the [Github issues example that is taught
-in the Advanced Tutorial of the Redux Toolkit](https://redux-toolkit.js.org/tutorials/advanced-tutorial).
+For this tutorial we will be borrowing the Github issues example that is taught
+in the [Advanced Tutorial](https://redux-toolkit.js.org/tutorials/advanced-tutorial) 
+of the [Redux Toolkit](https://redux-toolkit.js.org).
 
 It's a great example because it starts with a plain React application and it then
 shows how to migrate that application to Redux using the Redux Toolkit (RTK). One of the many good
