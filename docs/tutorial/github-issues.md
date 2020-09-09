@@ -5,17 +5,17 @@ title: Github Issues Viewer
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 :::info Note
-This tutorial assumes you are already familiar with both [RxJS](https://rxjs.dev) 
+This tutorial assumes you are already familiar with both [RxJS](https://rxjs.dev)
 and [React](https://reactjs.org).
 :::
 
 For this tutorial we will be borrowing the Github issues example that is taught
-in the [Advanced Tutorial](https://redux-toolkit.js.org/tutorials/advanced-tutorial) 
+in the [Advanced Tutorial](https://redux-toolkit.js.org/tutorials/advanced-tutorial)
 of the [Redux Toolkit](https://redux-toolkit.js.org).
 
 It's a great example because it starts with a plain React application and it then
 shows how to migrate that application to Redux using the Redux Toolkit (RTK). One of the many good
-things about the tutorial, is that it illustrates the mental models required to manage 
+things about the tutorial, is that it illustrates the mental models required to manage
 state efficiently with RTK. In this tutorial we will try to follow the same approach.
 
 ## Reviewing the Starting Example Application
@@ -90,7 +90,7 @@ of Axios. It's a pretty straightforward change:
 -import axios from 'axios'
 +import { ajax } from 'rxjs/ajax'
  import parseLink, { Links } from 'parse-link-header'
-+import { map, pluck } from 'rxjs/operators'
++import { map } from 'rxjs/operators'
 +import { Observable } from 'rxjs'
 
  export interface Label {
@@ -149,7 +149,9 @@ of Axios. It's a pretty straightforward change:
 -
 -  const { data } = await axios.get<RepoDetails>(url)
 -  return data
-+  return ajax.getJSON<RepoDetails>(url).pipe(pluck('open_issues_count'))
++  return ajax
++    .getJSON<RepoDetails>(url)
++    .pipe(map((repoDetails) => repoDetails.open_issues_count))
  }
 
 -export async function getIssue(org: string, repo: string, number: number) {
@@ -248,7 +250,7 @@ export const onIssueUnselecteed = () => {
 ```
 
 Now that we already have the top-level streams, let's create a stream that represents
-the "current repo and page" entity. We want to reset the page to 1 when the selected repo changes, 
+the "current repo and page" entity. We want to reset the page to 1 when the selected repo changes,
 so we can represent this behavior with `merge`:
 
 ```ts
@@ -282,14 +284,16 @@ const currentRepoAndPage$ = merge(
 From this stream we can extract the current page:
 
 ```ts
-export const [useCurrentPage] = bind(currentRepoAndPage$.pipe(pluck("page")))
+export const [useCurrentPage] = bind(
+  currentRepoAndPage$.pipe(map(({ page }) => page)),
+)
 ```
 
 And following our model, the list of issues also depends on this stream, but the
 list of issues needs to be loaded from the API.
 
 In this example we also want to use React Suspense: When the user changes the repo
-or page, we want to show a suspended state while the new issue list is loading 
+or page, we want to show a suspended state while the new issue list is loading
 (i.e. "Loading issues..."). The way we can do this, is by emitting the
 [`SUSPENSE`](../api/core/suspense) symbol, that means that there's data being loaded in this stream.
 This can be expressed reactively as:
@@ -363,7 +367,7 @@ export const [useIssueComments, issueComments$] = bind(
 ```
 
 As this pattern of `switchMap` and `startWith(SUSPENSE)` is something that's
-often used, react-rxjs exports [`switchMapSuspended`](../api/utils/switchMapSuspended) 
+often used, react-rxjs exports [`switchMapSuspended`](../api/utils/switchMapSuspended)
 in `@react-rxjs/utils` that makes it sightly less verbose.
 
 Here we also need to create a subscription to `issueComments$` in order to ensure
@@ -546,7 +550,7 @@ export const IssuesListPage = () => {
 
 #### IssuesPageHeader
 
-For the header, we can get rid of its props (as we have already declared its state), 
+For the header, we can get rid of its props (as we have already declared its state),
 and we will also take the chance to represent the loading state by
 using React's Suspense:
 
@@ -1024,7 +1028,7 @@ And use a lazy import with Suspense in App:
  )
 ```
 
-Now let's compare the speed between the original version without code splitting 
+Now let's compare the speed between the original version without code splitting
 and the one that we have optimised with React-RxJS. Looking at the
 Chrome Network tab with 3G for react-state:
 

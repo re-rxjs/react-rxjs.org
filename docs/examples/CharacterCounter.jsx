@@ -1,14 +1,14 @@
-import React from "react";
-import { Subject } from "rxjs";
-import { pluck, startWith } from "rxjs/operators";
-import { bind } from "@react-rxjs/core";
+import React from "react"
+import { Subject } from "rxjs"
+import { map, startWith } from "rxjs/operators"
+import { bind } from "@react-rxjs/core"
 
-const textSubject = new Subject();
-const setText = (newText) => textSubject.next(newText);
-const [useText, text$] = bind(textSubject.pipe(startWith("")));
+const textSubject = new Subject()
+const setText = (newText) => textSubject.next(newText)
+const [useText, text$] = bind(textSubject.pipe(startWith("")))
 
 function TextInput() {
-  const text = useText();
+  const text = useText()
 
   return (
     <div>
@@ -20,15 +20,15 @@ function TextInput() {
       <br />
       Echo: {text}
     </div>
-  );
+  )
 }
 
-const [useCharCount] = bind(text$.pipe(pluck("length")));
+const [useCharCount] = bind(text$.pipe(map((text) => text.length)))
 
 function CharacterCount() {
-  const count = useCharCount();
+  const count = useCharCount()
 
-  return <>Character Count: {count}</>;
+  return <>Character Count: {count}</>
 }
 
 export default function CharacterCounter() {
@@ -37,5 +37,5 @@ export default function CharacterCounter() {
       <TextInput />
       <CharacterCount />
     </div>
-  );
+  )
 }

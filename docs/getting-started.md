@@ -51,13 +51,13 @@ function TextInput() {
 `bind` returns a tuple that contains the hook, plus the underlying shared observable so it can be used by other streams:
 
 ```tsx
-import { pluck } from "rxjs/operators"
+import { map } from "rxjs/operators"
 import { bind } from "@react-rxjs/core"
 
 // Previously...
 // const [useText, text$] = bind(...);
 
-const [useCharCount] = bind(text$.pipe(pluck("length")))
+const [useCharCount] = bind(text$.pipe(map((text) => text.length)))
 
 function CharacterCount() {
   const count = useCharCount()
