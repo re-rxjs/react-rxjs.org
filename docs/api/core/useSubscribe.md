@@ -1,5 +1,5 @@
 ---
-title: useSubscribe(observable)
+title: useSubscribe(source)
 sidebar_label: useSubcribe()
 ---
 
