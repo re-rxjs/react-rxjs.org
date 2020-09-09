@@ -127,7 +127,7 @@ For this reason, it's important to understand that these streams only represent 
 
 If you want to keep one of these streams alive for as long as you need, React-RxJS also exposes `useSubscribe(stream)` and `<Subscribe source$={stream}>{ content }</Subscribe>`, which will render `{ content }` only after it subscribed to `stream`.
 
-With the mental model of streams as a state, it's also worth noting that the observables returned by `bind` don't complete: If the source of that observable completes, it will keep the last value and replay it back to new subscribers, as a completion on the source means that there won't be more changes to that stream. Remember that if the subscriber count reaches 0, this state will be cleaned off and the subscription will restart when a new observer subscribes later on.
+With the mental model of "streams as state", it's also worth noting that the observables returned by `bind` won't complete: If the source of that observable completes, it will keep the last value and replay it back to new subscribers, as a completion on the source means that there won't be more changes to that stream. Remember that if the subscriber count reaches 0, this state will be cleaned up, and the subscription will restart when a new observer subscribes later on.
 
 ## Composing streams
 

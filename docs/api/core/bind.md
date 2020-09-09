@@ -26,8 +26,10 @@ function bind<T>(
 2. The shared Observable that the hook uses: It also replays back the latest
    value emitted. It can be used for composing other streams that depend on it.
 
-Note that bind doesn't propagate completions from the source stream - The shared
+:::note
+`bind` doesn't propagate completions from the source stream - the shared
 subscription is closed as soon as there are no subscribers to that Observable.
+:::
 
 ### Example
 
