@@ -263,7 +263,7 @@ export const [useCurrentRepo, currentRepo$] = bind(
 
 const currentRepoAndPage$ = merge(
   // When repo changes, update repo and reset page to 1
-  repoSubject$.pipe(
+  currentRepo$.pipe(
     map((currentRepo) => ({
       ...currentRepo,
       page: 1,
@@ -330,12 +330,8 @@ We need to also make sure that an error won't close this top-level subscription:
 :::
 
 ```ts
-currentRepoAndPage$
-  .pipe(
-    switchMapTo(
-      merge(issues$, openIssuesLen$).pipe(catchError(() => EMPTY))
-    )
-  )
+merge(issues$, openIssuesLen$)
+  .pipe(retryWhen(() => currentRepoAndPage$.pipe(skip(1))))
   .subscribe()
 ```
 
