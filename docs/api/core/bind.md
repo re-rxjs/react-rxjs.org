@@ -66,6 +66,10 @@ function bind<A extends unknown[], O>(
 - `getObservable`: Factory of Observables. The arguments of this function
   will be the ones used in the hook.
 
+:::note
+It's important that the observable returned by `getObservable` shouldn't make the side-effect (or request) on subscription - Instead, it should take the needed value from other existing streams. See [Core Concepts - instances](core-concepts.md#instances) for more info
+:::
+
 #### Returns
 
 `[1, 2]`:

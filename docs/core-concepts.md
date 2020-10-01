@@ -157,10 +157,10 @@ Now, where does data for the state come from? Probably the first example that we
 import { ajax } from "rxjs/ajax"
 import { bind } from "@react-rxjs/core"
 
-const [usePost, post$] = bind((id: string) => ajax.getJSON("/posts/" + id))
+const [useTodos, todo$] = bind(ajax.getJSON("/todos"))
 ```
 
-And of course, this will work: Any component can use `usePost` to fetch the post of a specific id.
+And of course, this will work: Any component can use `useTodos` to get the list of todos.
 
 However, there are some times where we need to use data coming directly from the user. This is where RxJS `Subject`s come into play.
 
@@ -188,6 +188,28 @@ Keep in mind that `bind` doesn't do magic. If no one is subscribed to `todoList$
 
 Remember, if you have a case like this (where you are pushing a Subject but no one is subscribed to those changes), make sure you have an active subscription to the stream by using `<Subscribe source$={stream} />` or `useSubscribe(stream)`. This way, `todoList$` will update when a new value is pushed to the subject, and the result will be replayed for every new subscriber that arrives later.
 
+## Instances
+
+There are many times where you need components to access a particular instance - Classic example is a list of posts. To help with that, `bind` can also take a factory function that returns an Observable for that instance.
+
+However, when using this overload it's important that this observable shouldn't make the actual request, because it's hard to manage the lifecycle of these observables (when they subscribe, and when they can clean up) - Instead, it should take the value from an existing Observable-state.
+
+For example, if we have a list of posts, we might have an observable that has all of them in a dictionary:
+
+```ts
+const [usePosts, posts$] = bind(service.getPost$()) // Dictionary<Post>
+```
+
+Although from within each instance component we could theoretically call `usePosts()`, and then take the post that component actually needs, this would cause unnecessary re-renders when other instances change. We solve this by using the factory overload:
+
+```ts
+const [usePost, post$] = bind((id: string) =>
+  posts$.pipe(map((posts) => posts[id])),
+)
+```
+
+And now the component can use `usePost(id)` by passing it's own id, and that component will re-render only when that post changes. The second parameter returned, `post$`, it's actually also a function so that it can be composed in other streams: `post$(id)` returns the observable instance that emits Posts for that specific id.
+
 ## Suspense
 
 In an earlier example:
@@ -196,7 +218,7 @@ In an earlier example:
 import { ajax } from "rxjs/ajax"
 import { bind } from "@react-rxjs/core"
 
-const [usePost, post$] = bind((id: string) => ajax.getJSON("/posts/" + id))
+const [useTodos, todo$] = bind(ajax.getJSON("/todos"))
 ```
 
 You might be wondering - how does this _exactly_ work with React? If React is pull-based and it _needs_ a value at the time it's re-rendering, this stream won't have a value until the ajax call is resolved.
@@ -212,9 +234,7 @@ import { ajax } from "rxjs/ajax"
 import { startWith } from "rxjs/operators"
 import { bind } from "@react-rxjs/core"
 
-const [usePost, post$] = bind((id: string) =>
-  ajax.getJSON("/posts/" + id).pipe(startWith(null)),
-)
+const [useTodos, todos$] = bind(ajax.getJSON("/todos").pipe(startWith(null)))
 ```
 
 Now `usePost` will emit `null` immediately while it's fetching data (so that we can manually handle that), instead of suspending the component, and when the ajax call is resolved, it will emit the result of that call.
