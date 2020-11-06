@@ -114,7 +114,7 @@ import { interval } from "rxjs"
 import { take } from "rxjs/operators"
 import { bind } from "@react-rxjs/core"
 
-const [useFirst5SpacedNumbers, first5SpacedNumbers] = bind(
+const [useFirst5SpacedNumbers, first5SpacedNumbers$] = bind(
   interval(1000).pipe(take(5)),
 )
 ```
@@ -237,7 +237,7 @@ import { bind } from "@react-rxjs/core"
 const [useTodos, todos$] = bind(ajax.getJSON("/todos").pipe(startWith(null)))
 ```
 
-Now `usePost` will emit `null` immediately while it's fetching data (so that we can manually handle that), instead of suspending the component, and when the ajax call is resolved, it will emit the result of that call.
+Now `useTodos` will emit `null` immediately while it's fetching data (so that we can manually handle that), instead of suspending the component, and when the ajax call is resolved, it will emit the result of that call.
 
 When using Suspense, however, there's also another way to suspend a component with `react-rxjs`: by emitting `SUSPENSE`. For example, this can come in handy if you need to refresh the data because some filter has changed.
 
