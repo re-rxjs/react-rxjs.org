@@ -1,7 +1,7 @@
 import React from "react"
 import { Subject } from "rxjs"
 import { map, startWith } from "rxjs/operators"
-import { bind } from "@react-rxjs/core"
+import { bind, Subscribe } from "@react-rxjs/core"
 
 const textSubject = new Subject()
 const setText = (newText) => textSubject.next(newText)
@@ -23,7 +23,7 @@ function TextInput() {
   )
 }
 
-const [useCharCount] = bind(text$.pipe(map((text) => text.length)))
+const [useCharCount, charCount$] = bind(text$.pipe(map((text) => text.length)))
 
 function CharacterCount() {
   const count = useCharCount()
@@ -34,8 +34,10 @@ function CharacterCount() {
 export default function CharacterCounter() {
   return (
     <div>
-      <TextInput />
-      <CharacterCount />
+      <Subscribe source$={charCount$}>
+        <TextInput />
+        <CharacterCount />
+      </Subscribe>
     </div>
   )
 }
