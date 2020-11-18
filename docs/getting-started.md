@@ -3,6 +3,7 @@ title: Getting Started
 ---
 
 import CharacterCounter from "./examples/CharacterCounter"
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 ## Installation
 
@@ -52,12 +53,12 @@ function TextInput() {
 
 ```tsx
 import { map } from "rxjs/operators"
-import { bind } from "@react-rxjs/core"
+import { bind, Subscribe } from "@react-rxjs/core"
 
 // Previously...
 // const [useText, text$] = bind(...);
 
-const [useCharCount] = bind(text$.pipe(map((text) => text.length)))
+const [useCharCount, charCount$] = bind(text$.pipe(map((text) => text.length)))
 
 function CharacterCount() {
   const count = useCharCount()
@@ -66,14 +67,16 @@ function CharacterCount() {
 }
 ```
 
-If we put everything together
+Something to note is that a subscription on the underlying observable must be present before the hook is executed. We can use `Subscribe` to help us with it:
 
 ```tsx
 function CharacterCounter() {
   return (
     <div>
-      <TextInput />
-      <CharacterCount />
+      <Subscribe source$={charCount$}>
+        <TextInput />
+        <CharacterCount />
+      </Subscribe>
     </div>
   )
 }
@@ -81,7 +84,9 @@ function CharacterCounter() {
 
 This is shown as:
 
-<CharacterCounter />
+<BrowserOnly>
+  {() => <CharacterCounter />}
+</BrowserOnly>
 
 ## Next steps
 
