@@ -7,26 +7,32 @@ A [pipeable operator] that collects all the [`GroupedObservable`]s emitted by
 the source and emits a `Map` with the active inner observables.
 
 ```ts
-function collect<K, V>(filter?: (grouped: GroupedObservable<K, V>) => Observable<boolean>): 
-  OperatorFunction<GroupedObservable<K, V>, Map<K, GroupedObservable<K, V>>>
+function collect<K, V>(
+  filter?: (grouped: GroupedObservable<K, V>) => Observable<boolean>,
+): (
+  source$: Observable<GroupedObservable<K, V>>,
+) => CollectedObservable<Map<K, GroupedObservable<K, V>>>
 ```
 
 #### Arguments
 
-- `filter?`: (Optional) A function that receives the inner 
-  Observable and returns an Observable of boolean values, which indicates 
+- `filter?`: (Optional) A function that receives the inner
+  Observable and returns an Observable of boolean values, which indicates
   whether the inner Observable should be collected. Default: `undefined`.
 
 #### Returns
 
-[`OperatorFunction<GroupedObservable<K, V>, Map<K, GroupedObservable<K, V>>>`][OperatorFunction]: An Observable that 
-emits a `Map` containing all the keys seen in the source grouped Observables so far, along with the grouped Observable
-for matches each key.
+`CollectedObservable<Map<K, GroupedObservable<K, V>>>` - An Observable that:
+
+- Emits a `Map` containing all the keys seen in the source grouped Observables
+  so far, along with the grouped Observable for matches each key.
+- Has a function `.get(key: K): Observable<V>` that returns the Observable
+  that matches the key parameter.
 
 ## See also
-* [`collectValues()`](collectValues)
-* [`split(keySelector)`](split)
+
+- [`collectValues()`](collectValues)
+- [`split(keySelector)`](split)
 
 [pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
-[`GroupedObservable`]: https://rxjs.dev/api/index/class/GroupedObservable
-[OperatorFunction]: https://rxjs.dev/api/index/interface/OperatorFunction
+[`groupedobservable`]: https://rxjs.dev/api/index/class/GroupedObservable
