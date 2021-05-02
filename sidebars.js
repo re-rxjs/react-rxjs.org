@@ -10,7 +10,6 @@ module.exports = {
           "api/core/bind",
           "api/core/shareLatest",
           "api/core/suspense",
-          "api/core/useSubscribe",
           "api/core/subscribe",
         ],
       },
