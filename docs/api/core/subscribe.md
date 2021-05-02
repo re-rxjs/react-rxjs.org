@@ -20,7 +20,7 @@ const Subscribe: React.FC<{
 
 #### Properties
 
-- `source$`: (Optional) Source Observable that the Component should subscribe to.
+- `source$`: (Optional) Source Observable that the Component should subscribe to, before its children renders.
 - `fallback`: (Optional) The JSX Element to be rendered before the
   subscription is created. Default: `null`.
 
