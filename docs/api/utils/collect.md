@@ -3,6 +3,10 @@ title: collect(filter)
 sidebar_label: collect()
 ---
 
+:::caution
+This function is deprecated. [`partitionByKey`](partitionByKey) covers its intended use case.
+:::
+
 A [pipeable operator] that collects all the [`GroupedObservable`]s emitted by
 the source and emits a `Map` with the active inner observables.
 

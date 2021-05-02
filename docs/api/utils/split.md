@@ -3,6 +3,10 @@ title: split(keySelector)
 sidebar_label: split()
 ---
 
+:::caution
+This function is deprecated. [`partitionByKey`](partitionByKey) covers its intended use case.
+:::
+
 A [pipeable operator] that groups the items emitted by the source based on the
 `keySelector` function, emitting one Observable for each group.
 
