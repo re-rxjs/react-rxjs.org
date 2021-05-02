@@ -2,6 +2,11 @@
 title: collectValues()
 ---
 
+:::caution
+This function is deprecated. [`partitionByKey`](partitionByKey) with
+[`combineKeys`](combineKeys) covers its intended use case.
+:::
+
 A [pipeable operator] that collects all the [`GroupedObservable`]s emitted by
 the source and emits a `Map` with the latest values of the inner Observables.
 

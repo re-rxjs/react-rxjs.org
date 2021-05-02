@@ -10,7 +10,6 @@ module.exports = {
           "api/core/bind",
           "api/core/shareLatest",
           "api/core/suspense",
-          "api/core/useSubscribe",
           "api/core/subscribe",
         ],
       },
@@ -18,14 +17,25 @@ module.exports = {
         type: "category",
         label: "Utils",
         items: [
-          "api/utils/collect",
-          "api/utils/collectValues",
+          "api/utils/combineKeys",
+          "api/utils/contextBinder",
+          "api/utils/createSignal",
+          "api/utils/createKeyedSignal",
           "api/utils/mergeWithKey",
+          "api/utils/partitionByKey",
           "api/utils/selfDependant",
-          "api/utils/split",
           "api/utils/suspend",
           "api/utils/suspended",
           "api/utils/switchMapSuspended",
+          {
+            type: "category",
+            label: "Deprecated",
+            items: [
+              "api/utils/split",
+              "api/utils/collect",
+              "api/utils/collectValues",
+            ]
+          }
         ],
       },
     ],

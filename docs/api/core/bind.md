@@ -61,7 +61,7 @@ Binds an Observable factory function to React, and returns a hook and shared str
 ```ts
 function bind<A extends unknown[], O>(
   getObservable: (...args: A) => Observable<O>,
-  defaultValue?: T,
+  defaultValue?: (...args: A) => T | T,
 ): [(...args: A) => Exclude<O, typeof SUSPENSE>, (...args: A) => Observable<O>]
 ```
 
