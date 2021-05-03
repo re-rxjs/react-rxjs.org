@@ -24,13 +24,13 @@ yarn add rxjs @react-rxjs/core
 `@react-rxjs/core` exports a function called `bind` which is used to connect a stream to a hook.
 
 ```tsx
-import { Subject } from "rxjs"
-import { startWith } from "rxjs/operators"
 import { bind } from "@react-rxjs/core"
+import { createSignal } from "@react-rxjs/utils"
 
-const textSubject = new Subject()
-const setText = (newText) => textSubject.next(newText)
-const [useText, text$] = bind(textSubject.pipe(startWith("")))
+// A signal is an entry point to react-rxjs. It's equivalent to using a subject
+const [textChange$, setText] = createSignal();
+
+const [useText, text$] = bind(textChange$, "")
 
 function TextInput() {
   const text = useText()
@@ -40,6 +40,7 @@ function TextInput() {
       <input
         type="text"
         value={text}
+        placeholder="Type something..."
         onChange={(e) => setText(e.target.value)}
       />
       <br />
@@ -58,7 +59,11 @@ import { bind, Subscribe } from "@react-rxjs/core"
 // Previously...
 // const [useText, text$] = bind(...);
 
-const [useCharCount, charCount$] = bind(text$.pipe(map((text) => text.length)))
+const [useCharCount, charCount$] = bind(
+  text$.pipe(
+    map((text) => text.length)
+  )
+)
 
 function CharacterCount() {
   const count = useCharCount()
@@ -82,7 +87,7 @@ function CharacterCounter() {
 }
 ```
 
-This is shown as:
+The interactive result:
 
 <BrowserOnly>
   {() => <CharacterCounter />}

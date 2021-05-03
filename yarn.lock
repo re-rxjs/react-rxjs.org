@@ -1588,10 +1588,15 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@react-rxjs/core@^0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@react-rxjs/core/-/core-0.6.1.tgz#d2d401bdcb72baf7b5ecdf59d4b809bd044d2f0e"
-  integrity sha512-E2LXU+udZpaoy528IKVaIzuwcB7IEcBL9caWdnPx25B7SaoBo5BTVnuLNdTVZjjwExCBBeg0NO3Nmj408lMLvw==
+"@react-rxjs/core@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@react-rxjs/core/-/core-0.8.0.tgz#b73c0480a457b654fdcd6d6ede36bbd99c691b2e"
+  integrity sha512-LvmVEel9MPykAJoI0oZafmui2JOU18bmIf0X0P+oEtVii0LNaj8p/3eL52NfWgsQd6hSrjevSwNbbrScsYuaFg==
+
+"@react-rxjs/utils@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@react-rxjs/utils/-/utils-0.8.2.tgz#b662dd9abc03de382bfdcf08e0a2890329e288c7"
+  integrity sha512-oFDCzv9cMdzXqNTnOz70LG+Lj8LoyQ41uXosy7kbWL0BvDuGt08oZjlKr19VxXcLb8zWr5MkU5s+eofBEA8zZA==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"

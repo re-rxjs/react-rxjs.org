@@ -123,9 +123,57 @@ const [useFirst5SpacedNumbers, first5SpacedNumbers$] = bind(
 
 Something important to note, though, is that the subscription to the shared observable (in this case, `first5SpacedNumbers$`) must have an active subscription before the hook can execute. We can't rely on React renderer to make the initial subscription for us (the subscription which would trigger the side effect), because we can't rely on when rendering happens, nor if it will be interrupted or cancelled.
 
-This means that we need manage the subscription logic for the stream, in order to have full control over when to execute the initial subscription.
+React-RxJS provides different ways of addressing this: The most simple one is to declare the default value for that hook by using the optional argument in `bind`:
 
-There are many ways of doing that, but React-RxJS provides a utility to make it easier: `<Subscribe source$={stream}>{ content }</Subscribe>` will render `{ content }` only after subscribing to its `$source`. It also acts as a Suspense boundary, so you can also provide a `fallback` element.
+```tsx
+import { interval } from "rxjs"
+import { take } from "rxjs/operators"
+import { bind } from "@react-rxjs/core"
+
+const [useFirst5SpacedNumbers, first5SpacedNumbers$] = bind(
+  interval(1000).pipe(take(5)),
+  0 // Default value
+)
+
+function NumberDisplay() {
+  const number = useFirst5SpacedNumbers()
+
+  return <div>{number}</div>;
+}
+
+function App() {
+  return <NumberDisplay />
+}
+```
+
+When a React-RxJS hook has a default value and no one is subscribed to its observable, on the first render it will return that value, and then it will safely subscribe to the source after mounting. If the underlying observable did have a subscription before the component was mounted, it will directly get the current value instead.
+
+If you don't give it a default value, you will need to make sure that observable has a subscription active before the Component that uses that hook is called. React-RxJS has a utility that helps with this: `<Subscribe source$={stream}>{ children }</Subscribe>` will render `{ children }` only after subscribing to its `source$`. `Subscribe` also subscribes to all the observables used by its children (as if it were a React's Context), so in this case we can just omit `source$`
+
+
+```tsx
+import { interval } from "rxjs"
+import { take } from "rxjs/operators"
+import { bind, Subscribe } from "@react-rxjs/core"
+
+const [useFirst5SpacedNumbers, first5SpacedNumbers$] = bind(
+  interval(1000).pipe(take(5))
+)
+
+function NumberDisplay() {
+  const number = useFirst5SpacedNumbers()
+
+  return <div>{number}</div>;
+}
+
+function App() {
+  return <Subscribe>
+    <NumberDisplay />
+  </Subscribe>
+}
+```
+
+Keep in mind that `<Subscribe>` will hold a subscription to the observables until it gets unmounted, you need to decide where to put these `<Subscribe>` boundaries on your application so that subscriptions get cleaned up properly.
 
 With the mental model of "streams as state", it's also worth noting that the observables returned by `bind` won't complete: If the source of that observable completes, it will keep the last value and replay it back to new subscribers, as a completion on the source means that there won't be more changes to that stream. Remember that if the subscriber count reaches 0, this state will be cleaned up, and the subscription will restart when a new observer subscribes later on.
 
@@ -162,31 +210,28 @@ const [useTodos, todo$] = bind(ajax.getJSON("/todos"))
 
 And of course, this will work: Any component can use `useTodos` to get the list of todos.
 
-However, there are some times where we need to use data coming directly from the user. This is where RxJS `Subject`s come into play.
+However, there are some times where we need to use data coming directly from the user. This is where RxJS `Subject`s come into play. In React-RxJS we've abstracted this into *signals*, which separate the producer and the consumer of that subject.
 
-With a `Subject` you can create an entry point for your streams. For example, in a local todos app, you can define your state as:
+With a signal you can create an entry point for your streams. For example, in a local todos app, you can define your state as:
 
 ```ts
-import { Subject } from "rxjs"
-import { scan, startWith } from "rxjs/operators"
+import { scan } from "rxjs/operators"
 import { bind } from "@react-rxjs/core"
+import { createSignal } from "@react-rxjs/utils"
 
-const newTodos = new Subject()
-const postNewTodo = (todo) => newTodos.next(todo)
+const [newTodos$, postNewTodo] = createSignal();
 
 const [useTodoList, todoList$] = bind(
-  newTodos.pipe(
-    scan((acc, todo) => [...acc, todo], []),
-    startWith([]),
+  newTodos$.pipe(
+    scan((acc, todo) => [...acc, todo], [])
   ),
+  []
 )
 ```
 
 And now the "TodoForm" component can directly call `postNewTodo` whenever the user creates a todo, and the change will be propagated down to the list.
 
 Keep in mind that `bind` doesn't do magic. If no one is subscribed to `todoList$` (not even from the hook) then that stream won't be listening for changes on `newTodos` subject, and if a subscription happens late, the subject won't replay the todos created, so they would get lost.
-
-This can be easily prevent if the component that would call `postNewTodo` is also inside the boundary `<Subscribe source$={todoList$}>` - Which in this case it would make sense as it's probably part of the same feature.
 
 ## Instances
 
@@ -208,6 +253,8 @@ const [usePost, post$] = bind((id: string) =>
 
 And now the component can use `usePost(id)` by passing it's own id, and that component will re-render only when that post changes. The second parameter returned, `post$`, it's actually also a function so that it can be composed in other streams: `post$(id)` returns the observable instance that emits Posts for that specific id.
 
+Lastly, do not use this overload of `bind` as a way of calling the server. React-RxJS' mental model is that the observables are state, using bind to create a hook `useCreateUser(userName, email)` that makes the action of creating a new user won't work as you'd like to. Instead, create a [`signal`](#entry-points) and have an observable depend on that signal to send the request to the server.
+
 ## Suspense
 
 In an earlier example:
@@ -225,7 +272,7 @@ Well, React added a feature called Suspense. With Suspense, we can represent val
 
 `react-rxjs` comes with full support for Suspense, and it treats it as a first-class citizen. This means that by default, using a hook from a stream that hasn't emitted any value will result in that hook suspending the component.
 
-Note that for this to work properly, you need to have proper Suspense boundaries throughout your component tree. If you don't want to use Suspense just yet, the solution is simple: Make sure that the stream always has a value. This can be done through RxJS' `startWith`, but `bind` can also take an optional parameter for the default value:
+Note that for this to work properly, you need to have proper Suspense boundaries throughout your component tree. If you don't want to use Suspense just yet, the solution is simple: Make sure that the stream always has a value. `bind` also takes an optional parameter for the default value, which guarantees that the hook won't invoke suspense:
 
 ```ts
 import { ajax } from "rxjs/ajax"
