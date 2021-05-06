@@ -7,32 +7,42 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 
 ## Installation
 
-React-RxJS is published in npm as `@react-rxjs/core`
+React-RxJS is published in npm as `@react-rxjs/core`.
+We also publish a recommended `@react-rxjs/utils` package with some useful functions to build reactive state streams.
 
 ```sh
-npm i rxjs @react-rxjs/core
+npm i rxjs @react-rxjs/core @react-rxjs/utils
 ```
 
 or using yarn
 
 ```sh
-yarn add rxjs @react-rxjs/core
+yarn add rxjs @react-rxjs/core @react-rxjs/utils
 ```
 
-## Create a hook from an observable
-
-`@react-rxjs/core` exports a function called `bind` which is used to connect a stream to a hook.
+## Usage
 
 ```tsx
-import { bind } from "@react-rxjs/core"
+import { map } from "rxjs/operators"
+import { bind, Subscribe } from "@react-rxjs/core"
 import { createSignal } from "@react-rxjs/utils"
 
 // A signal is an entry point to react-rxjs. It's equivalent to using a subject
 const [textChange$, setText] = createSignal();
 
+// bind returns a hook to get the value of the observable.
 const [useText, text$] = bind(textChange$, "")
 
+// And it also returns an observable so we can compose this state with other observables
+// in here we're making a derived state by calculating the text$'s length.
+const [useCharCount, charCount$] = bind(
+  text$.pipe(
+    map((text) => text.length)
+  )
+)
+
 function TextInput() {
+  // Just use the hook!
   const text = useText()
 
   return (
@@ -41,48 +51,30 @@ function TextInput() {
         type="text"
         value={text}
         placeholder="Type something..."
-        onChange={(e) => setText(e.target.value)}
+        onChange={
+          // And trigger the signal
+          (e) => setText(e.target.value)
+        }
       />
       <br />
       Echo: {text}
     </div>
   )
 }
-```
-
-`bind` returns a tuple that contains the hook, plus the underlying shared observable so it can be used by other streams:
-
-```tsx
-import { map } from "rxjs/operators"
-import { bind, Subscribe } from "@react-rxjs/core"
-
-// Previously...
-// const [useText, text$] = bind(...);
-
-const [useCharCount, charCount$] = bind(
-  text$.pipe(
-    map((text) => text.length)
-  )
-)
 
 function CharacterCount() {
   const count = useCharCount()
 
   return <>Character Count: {count}</>
 }
-```
 
-Something to note is that a subscription on the underlying observable must be present before the hook is executed. We can use `Subscribe` to help us with it:
-
-```tsx
 function CharacterCounter() {
+  // `Subscribe` manages the subscription lifetime of its children
   return (
-    <div>
-      <Subscribe source$={charCount$}>
-        <TextInput />
-        <CharacterCount />
-      </Subscribe>
-    </div>
+    <Subscribe>
+      <TextInput />
+      <CharacterCount />
+    </Subscribe>
   )
 }
 ```
@@ -93,7 +85,8 @@ The interactive result:
   {() => <CharacterCounter />}
 </BrowserOnly>
 
-## Next steps
+## There's more!
 
-We strongly recommend reading through [core concepts](core-concepts.md) to
-understand the mindset of this library.
+This is just a simple example of two components sharing a synchronous state.
+
+React-RxJS gets even more fun when you start using asynchronous state, leveraging Suspense and enhancing code-splitting!
