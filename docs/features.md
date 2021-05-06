@@ -7,10 +7,9 @@ title: Features
 - Simplifies code navigability.
 - First-class support for React Suspense.
 - First-class support for Error boundaries.
-- No centralized store.
-- No state context provider.
+- Completely decentralized store.
 - Built in Typescript.
-- Works with React DOM and React Native.
+- Works with any React renderer (React DOM, React Native, etc.).
 - No external dependencies.
 - Extremely light: 3.4kB parsed, 1.5kB gziped.
 - Thin API.

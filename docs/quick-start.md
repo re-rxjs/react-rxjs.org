@@ -28,7 +28,7 @@ import { bind, Subscribe } from "@react-rxjs/core"
 import { createSignal } from "@react-rxjs/utils"
 
 // A signal is an entry point to react-rxjs. It's equivalent to using a subject
-const [textChange$, setText] = createSignal();
+const [textChange$, setText] = createSignal<string>()
 
 // bind returns a hook to get the value of the observable.
 const [useText, text$] = bind(textChange$, "")
@@ -79,7 +79,7 @@ function CharacterCounter() {
 }
 ```
 
-The interactive result:
+### Interactive result
 
 <BrowserOnly>
   {() => <CharacterCounter />}

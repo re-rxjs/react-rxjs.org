@@ -1,6 +1,7 @@
 module.exports = {
   someSidebar: {
     Introduction: ["motivation", "quick-start", "features"],
+    Recipes: ["recipes/invalidate-query"],
     "API Reference": [
       {
         type: "category",
