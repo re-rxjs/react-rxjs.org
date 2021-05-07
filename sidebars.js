@@ -1,7 +1,7 @@
 module.exports = {
   someSidebar: {
-    Introduction: ["motivation", "core-concepts", "getting-started"],
-    Tutorial: ["tutorial/github-issues", "tutorial/todos"],
+    Introduction: ["motivation", "quick-start", "features"],
+    Recipes: ["recipes/invalidate-query"],
     "API Reference": [
       {
         type: "category",
