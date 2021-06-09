@@ -39,9 +39,9 @@ import { Subject } from "rxjs"
 import { scan, startWith } from 'rxjs/operators'
 import { mergeWithKey } from '@react-rxjs/utils'
 
-const inc$ = new Subject()
-const dec$ = new Subject()
-const resetTo$ = new Subject<number>()
+const [inc$, doInc] = createSignal();
+const [dec$, doDec] = createSignal();
+const [resetTo$, doResetTo] = createSignal<number>();
 
 const counter$ = mergeWithKey({
   inc$,
