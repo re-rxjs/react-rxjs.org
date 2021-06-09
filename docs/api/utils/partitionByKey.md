@@ -28,6 +28,35 @@ export function partitionByKey<T, K, R>(
 
 2. A stream with the list of active keys
 
+### Examples
+
+```ts
+const source = interval(1000);
+const [getGroupByKey, keys$] = partitionByKey(
+  source,
+  x => x % 2 == 0 ? "even" : "odd",
+  (groupedObservable$, key) => groupedObservable$.pipe(map(x => `${x} is ${key}`))
+);
+
+const [useEven, even$] = bind(getGroupByKey("even"));
+const [useOdd, odd$] = bind(getGroupByKey("odd"));
+const [useKeys] = bind(keys$);
+
+function MyComponent() {
+  const odd = useOdd();
+  const even = useEven();
+  const keys = useKeys();
+
+  return (
+    <>
+      <div>Your keys are: {keys.join(", ")}</div>
+      <div>{odd}</div>
+      <div>{even}</div>
+    </>
+  );
+}
+```
+
 ## See also
 
 - [`combineKeys()`](combineKeys)
