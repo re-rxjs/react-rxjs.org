@@ -78,7 +78,7 @@ Something to note is that a subscription on the underlying observable must be pr
 function CharacterCounter() {
   return (
     <div>
-      <Subscribe source$={charCount$}>
+      <Subscribe>
         <TextInput />
         <CharacterCount />
       </Subscribe>
