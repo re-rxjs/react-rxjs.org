@@ -57,6 +57,13 @@ function MyComponent() {
 }
 ```
 
+A more typical tagged union example:
+
+```ts
+Coming soon.
+```
+
+
 ## See also
 
 - [`combineKeys()`](combineKeys)
