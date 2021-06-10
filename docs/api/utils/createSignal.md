@@ -26,6 +26,41 @@ the value of the Observable.
 
 2. The emitter function
 
+
+### Examples
+
+Void signal (no payload):
+
+```ts
+const [buttonPresses$, pressButton] = createSignal();
+// ...
+<button onClick={() => pressButton()}>...</button>
+```
+
+Taking a payload. Note that without the type parameter you'll get a void
+signal as above:
+
+```ts
+const [itemComplete$, doCompleteItem] = createSignal<number>();
+
+// ...
+
+<button onClick={() => doCompleteItem(id)}>...</button>
+```
+
+Mapping the emitter function's arguments to the resulting emission:
+
+```ts
+const mapper = (id: number, status: Status) => ({ id, status });
+const [statusChange$, setStatus] = createSignal(mapper);
+// statusChange$ is Observable<{id: number, status: Status}>
+// setStatus is (id: number, status: Status) => void
+
+// ...
+
+<button onClick={() => setStatus(id, Status.Complete)}>...</button>
+```
+
 ## See also
 
 - [`createKeyedSignal()`](createKeyedSignal)
