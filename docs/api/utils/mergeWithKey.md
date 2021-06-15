@@ -37,7 +37,7 @@ of input Observables. Default: `null`.
 ```ts
 import { Subject } from "rxjs"
 import { scan, startWith } from 'rxjs/operators'
-import { mergeWithKey } from '@react-rxjs/utils'
+import { mergeWithKey, createSignal } from '@react-rxjs/utils'
 
 const [inc$, doInc] = createSignal();
 const [dec$, doDec] = createSignal();
