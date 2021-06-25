@@ -83,7 +83,7 @@ const [petByID, pets$] = partitionByKey(
   (sub, key) => sub,
 )
 
-const [usePetByID] = bind(id: number => petByID(id));
+const [usePetByID] = bind((id: number) => petByID(id));
 const [usePetIDs] = bind(pets$);
 
 const PetItem = ({petID}: {petID: number}) => {
