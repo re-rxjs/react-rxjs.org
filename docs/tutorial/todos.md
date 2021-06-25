@@ -244,9 +244,9 @@ Simple! Now we edit our TodoList component to pass just the todo id:
 
 ```diff
  function TodoList() {
--  const todoIds = useTodos();
-+  const todoList = useTodos();
- 
+-  const todoList = useTodos();
++  const todoIds = useTodos();
+
    return (
      <>
        <TodoListStats />
@@ -285,10 +285,7 @@ export enum FilterType {
   Done = "done",
   Pending = "pending"
 }
-const selectedFilter$ = new Subject<FilterType>()
-export const onSelectFilter = (type: FilterType) => {
-  selectedFilter$.next(type)
-}
+const [selectedFilter$, onSelectFilter] = createSignal<FilterType>()
 ```
 
 Next, let's create a hook and a stream for the current filter:

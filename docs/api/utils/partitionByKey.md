@@ -57,10 +57,56 @@ function MyComponent() {
 }
 ```
 
-A more typical tagged union example:
+A more typical list example. The list component can bind the list of keys
+while the item component binds the stream for each item. To see why you'd want
+to do this rather than just stream the list of items, refer to the full
+example at [`combineKeys()`](combineKeys):
 
-```ts
-Coming soon.
+```tsx
+interface Pet {
+  id: number;
+  pet: string,
+  pos?: number;
+}
+
+const pets = ["Fluffy", "Bella", "Nala", "Nocturne", "Teddy"]
+               .map((pet, id): Pet => ({pet, id}));
+
+let [petRace$, petRaceDispatch] = createSignal<Pet>();
+
+// Let's line up our pets
+petRace$ = merge(of(...pets), petRace$);
+
+const [petByID, pets$] = partitionByKey(
+  petRace$,
+  x => x.id,
+  (sub, key) => sub,
+)
+
+const [usePetByID] = bind(id: number => petByID(id));
+const [usePetIDs] = bind(pets$);
+
+const PetItem = ({petID}: {petID: number}) => {
+  const pet = usePetByID(petID);
+
+  return (
+    <li>
+      <div style={{width:'100%', textAlign:'right'}}>
+        {pet.pet}
+      </div>
+      <br />
+      <div style={{textAlign:'left'}}>
+        {'*'.repeat(pet.pos || 1)}
+      </div>
+    </li>
+  );
+}
+
+const PetList = () => {
+  const petIDs = usePetIDs();
+
+  return (<ul>{petIDs.map(x => (<PetItem key={x} petID={x} />))}</ul>);
+}
 ```
 
 
