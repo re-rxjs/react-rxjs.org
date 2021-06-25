@@ -29,7 +29,7 @@ of input Observables. Default: `null`.
 #### Returns
 
 `Observable<OT[keyof O]>`: An observable that emits a flux-like object that contains 2 properties:
-- `key`: they key of the stream that has emitted.
+- `type`: the key of the stream that has emitted.
 - `payload`: the emitted value.
 
 ### Example
