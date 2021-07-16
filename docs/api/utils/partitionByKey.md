@@ -58,9 +58,8 @@ function MyComponent() {
 ```
 
 A more typical list example. The list component can bind the list of keys
-while the item component binds the stream for each item. To see why you'd want
-to do this rather than just stream the list of items, refer to the full
-example at [`combineKeys()`](combineKeys):
+while the item component binds the stream for each item, eliminating
+unnecessary renders:
 
 ```tsx
 interface Pet {
