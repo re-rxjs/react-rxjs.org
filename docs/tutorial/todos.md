@@ -108,15 +108,16 @@ similar to the `groupBy` operator that's exposed from RxJS. However, there are
 some important differences:
 
 - `partitionByKey` gives you a function that returns an Observable, rather
-  than an Observable that emits Observables.
-- Another important difference is the third argument of `partitionByKey`,
-  which allows you to create a complex inner stream that will become the
-  "grouped" stream that is returned.
-- Also, this returned stream is enhanced with a `shareReplay(1)`, and
-  `partitionByKey` internally subscribes to it as soon as it is created to
-  ensure that the consumer always has the latest value.
-
-  <!-- need to verify some of this stuff that applies to `split()` -->
+  than an Observable that emits Observables. It also provides an Observable
+  that emits the list of keys, whenever that list changes (`keys$` in the code
+  above).
+- `partitionByKey` has an optional third parameter which allows you to create
+  a complex inner stream that will become the "grouped" stream that is
+  returned.
+- This returned stream is enhanced with a
+  [`shareLatest`](../api/utils/shareLatest) and `partitionByKey` internally
+  subscribes to it as soon as it is created to ensure that the consumer always
+  has the latest value.
 
 ## Collecting the GroupedObservables
 
