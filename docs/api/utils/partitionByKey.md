@@ -79,7 +79,6 @@ petRace$ = merge(of(...pets), petRace$);
 const [petByID, pets$] = partitionByKey(
   petRace$,
   x => x.id,
-  (sub, key) => sub,
 )
 
 const [usePetByID] = bind((id: number) => petByID(id));
