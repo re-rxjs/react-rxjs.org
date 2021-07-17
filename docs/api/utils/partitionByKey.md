@@ -71,10 +71,10 @@ interface Pet {
 const pets = ["Fluffy", "Bella", "Nala", "Nocturne", "Teddy"]
                .map((pet, id): Pet => ({pet, id}));
 
-let [petRace$, petRaceDispatch] = createSignal<Pet>();
+const [petUpdate$, updatePet] = createSignal<Pet>();
 
 // Let's line up our pets
-petRace$ = merge(of(...pets), petRace$);
+const petRace$ = merge(of(...pets), petUpdate$);
 
 const [petByID, pets$] = partitionByKey(
   petRace$,
