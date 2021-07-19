@@ -19,26 +19,14 @@ application. Our app will be able to do the following:
 
 ## Capturing user input
 
-The first thing that we should do is to capture the events triggered by the user.
-Let's create a few `Subject`s for this. Also, it's probably best if our presentational
-components don't know about the existence of these Subjects. So we will also create
-a set of functions that capture the user-evens and push then into the Subjects:
+The first thing that we should do is to capture the events triggered by the
+user. Let's create some Signals for this:
 
 ```tsx
-import { Subject } from "rxjs"
-
-const newTodo$ = new Subject<string>()
-export const onNewTodo = (text: string) => text && newTodo$.next(text)
-
-const editTodo$ = new Subject<{ id: number; text: string }>()
-export const onEditTodo = (id: number, text: string) =>
-  editTodo$.next({ id, text })
-
-const toggleTodo$ = new Subject<number>()
-export const onToggleTodo = (id: number) => toggleTodo$.next(id)
-
-const deleteTodo$ = new Subject<number>()
-export const onDeleteTodo = (id: number) => deleteTodo$.next(id)
+const [newTodo$, onNewTodo] = createSignal<string>();
+const [editTodo$, onEditTodo] = createSignal<{ id: number; text: string }>();
+const [toggleTodo$, onToggleTodo] = createSignal<number>();
+const [deleteTodo$, onDeleteTodo] = createSignal<number>();
 ```
 
 ## Creating a single stream for all the user events
@@ -86,60 +74,61 @@ const todoActions$ = merge(
 
 Now that we have put all the streams together, let's create a stream for
 each todo. And for that, we will be using another operator from `@react-rxjs/utils`:
-the [`split`](../api/utils/split) operator: 
+the [`partitionByKey`](../api/utils/partitionByKey) operator: 
 
 ```ts
-type Todo = { id: number, text: string, done: boolean }
-
-const todos$: Observable<GroupedObservable<number, Todo>> = todoActions$.pipe(
-  split(
-    event => event.payload.id,
-    (event$, id) => event$.pipe(
-      takeWhile(event => event.type !== 'delete'),
+type Todo = { id: number; text: string; done: boolean };
+const [todosMap, keys$] = partitionByKey(
+  todoActions$,
+  event => event.payload.id,
+  (event$, id) =>
+    event$.pipe(
+      takeWhile((event) => event.type !== "delete"),
       scan(
         (state, action) => {
           switch (action.type) {
             case "add":
             case "edit":
-              return { ...state, text: action.payload.text }
+              return { ...state, text: action.payload.text };
             case "toggle":
-              return { ...state, done: !state.done}
+              return { ...state, done: !state.done };
             default:
-              return state
+              return state;
           }
         },
         { id, text: "", done: false } as Todo
       )
     )
-  )
 )
 ```
 
-As you can see `split` is very similar to the `groupBy` operator that's exposed
-from RxJS. However, there are some important differences:
+Now we have a function, `todosMap`, that returns an Observable of events
+associated with a given todo. `partitionByKey` transforms the source observable in a way
+similar to the `groupBy` operator that's exposed from RxJS. However, there are
+some important differences:
 
-- The first difference is that `split` doesn't have a "duration selector" argument
-for determining the duration of an inner stream. Once an inner stream completes, `split`
-will forget about it, meaning that it will remove it from its internal cache.
-Therefore, if afterwords the source emits a value with the same key, then `split`
-will create (and emit) a new `GroupedObservable`.
-
-- Another important difference is the second argument of `split`, which allows you
-to create a complex inner stream that will become the "grouped" stream that is emitted.
-
-- Also, this returned stream is enhanced with a `shareReplay(1)`, and `split` internally
-subscribes to it as soon as it is created to ensure that the consumer always has the
-latest value.
+- `partitionByKey` gives you a function that returns an Observable, rather
+  than an Observable that emits Observables. It also provides an Observable
+  that emits the list of keys, whenever that list changes (`keys$` in the code
+  above).
+- `partitionByKey` has an optional third parameter which allows you to create
+  a complex inner stream that will become the "grouped" stream that is
+  returned.
+- This returned stream is enhanced with a
+  [`shareLatest`](../api/utils/shareLatest) and `partitionByKey` internally
+  subscribes to it as soon as it is created to ensure that the consumer always
+  has the latest value.
 
 ## Collecting the GroupedObservables
 
-Our `todos$` variable is an `Observable` of `GroupedObservables<number, Todo>` and
-that in itself is not very useful. It would be a lot more convenient to have an `Observable`
-of `Map<number, Todo>`. Which is exactly what the [`collectValues`](../api/utils/collectValues)
-operator is for. Let's try it:
+We now have a way of getting streams for each todo, and we have a stream
+(`keys$`) that represents the list of todos by their ids and emits whenever
+one is added or deleted. We should also like a stream that emits whenever
+the state of any todo changes, and gives us access to all of them.
+[`combineKeys()`](../api/utils/combineKeys) suits this purpose. Let's try it:
 
 ```ts
-const todosMap$: Observable<Map<number, Todo>> = todos$.pipe(collectValues())
+const todosMap$: Observable<Map<number, Todo>> = combineKeys(keys$, todosMap);
 ```
 
 And with this we are ready to start wiring things up.
@@ -222,8 +211,70 @@ function TodoItem({item}) {
 }
 ```
 
-That's it! We've already got the basic version working. Now let's add the filters and
-the stats.
+That's it! We have a basic version working.
+
+## Cutting React out of the state management game
+
+What we've done so far is pretty neat, but there are a lot of unnecessary
+renders going on in our application. Editing any of the todos, for example,
+causes the whole list to re-render. To those with experience in React
+development, this hardly seems noteworthy—our state is our list of todos, it
+lives in our TodoList component, so of course it re-renders when that state
+changes. With React-RxJS, we can do better. Before we proceed with the
+remaining features, let's relieve React of its state management
+responsibilities altogether.
+
+Take a look at the stream we've bound to the TodoList component:
+
+```tsx
+const [useTodos] = bind(todosMap$.pipe(map(todosMap => [...todosMap.values()])));
+```
+
+This is just an `Observable<Todo[]>`, and it will emit every time any todo
+gets updated—triggering a TodoList render. In fact TodoList only needs to know
+which todos to display; rendering them according to their properties can be
+left up to the child component, TodoItem. Therefore let's bind a list of
+_which_ todos exist. Luckily we already have a stream for that, returned above
+by `partitionByKey`. So:
+
+```tsx
+const [useTodoIds] = bind(keys$);
+```
+
+Simple! Now we edit our TodoList component to pass just the todo id:
+
+```diff
+ function TodoList() {
+-  const todoList = useTodos();
++  const todoIds = useTodos();
+
+   return (
+     <>
+       <TodoListStats />
+       <TodoListFilters />
+       <TodoItemCreator />
+ 
+-      {todoList.map((todoItem) => (
+-        <TodoItem key={todoItem.id} item={todoItem} />
+-      ))}
++      {todoIds.map((id) => (
++      <TodoItem key={id} id={id} />
++      ))}
+     </>
+   );
+ }
+```
+
+and teach TodoItem to get its state from the stream corresponding to that id,
+rather than from its parent component:
+
+```tsx
+const TodoItem: React.FC<{ id: number }> = ({ id }) => {
+  const item = useTodo(id);
+
+  return( ... )
+}
+```
 
 ## Adding filters
 
@@ -235,10 +286,7 @@ export enum FilterType {
   Done = "done",
   Pending = "pending"
 }
-const selectedFilter$ = new Subject<FilterType>()
-export const onSelectFilter = (type: FilterType) => {
-  selectedFilter$.next(type)
-}
+const [selectedFilter$, onSelectFilter] = createSignal<FilterType>()
 ```
 
 Next, let's create a hook and a stream for the current filter:
@@ -249,26 +297,15 @@ const [useCurrentFilter, currentFilter$] = bind(
 )
 ```
 
-Also, let's make sure that our `useTodos` hook takes this into account:
+Also, let's tell our TodoItems not to render if they've been filtered out:
 
-```ts
-const todosList$ = todosMap$.pipe(
-  map(todosMap => [...todosMap.values()]),
-  shareLatest(), // We are using shareLatest because the stats will also consume it
-)
-
-const [useTodos] = bind(
-  combineLatest(todosList$, currentFilter$).pipe(
-    map(([todos, currentFilter]) => {
-      if (currentFilter === FilterType.All) {
-        return todos
-      }
-
-      const isDone = currentFilter === FilterType.Done
-      return todos.filter(todo => todo.done === isDone)
-    })
-  )
-)
+```diff
+ const TodoItem: React.FC<{ id: number }> = ({ id }) => {
+   const item = useTodo(id);
++  const currentFilter = useCurrentFilter();
+  
+   return ( ... );
+ }
 ```
 
 Time to implement the `TodoListFilters` component:

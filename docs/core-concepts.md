@@ -335,7 +335,7 @@ function App() {
   return (
     <div className="App">
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <Subscribe source$={timedBomb$}>
+        <Subscribe>
           <Bomb />
         </Subscribe>
       </ErrorBoundary>
