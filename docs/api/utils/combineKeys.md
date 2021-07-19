@@ -49,7 +49,7 @@ const petNames = ["Fluffy", "Bella", "Nala", "Nocturne", "Teddy"];
 
 const [petUpdate$, updatePet] = createSignal<Pet>();
 
-const petRace$ = petRace$.pipe(startWith(
+const petRace$ = petUpdate$.pipe(startWith(
   ...petNames.map((pet, id): Pet => ({pet, id, pos: 1})),
 ));
 
