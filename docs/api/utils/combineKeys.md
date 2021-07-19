@@ -47,14 +47,14 @@ interface Pet {
 
 const petNames = ["Fluffy", "Bella", "Nala", "Nocturne", "Teddy"];
 
-let [petRace$, petRaceDispatch] = createSignal<Pet>();
+const [petUpdate$, updatePet] = createSignal<Pet>();
 
-petRace$ = petRace$.pipe(startWith(
+const petRace$ = petRace$.pipe(startWith(
   ...petNames.map((pet, id): Pet => ({pet, id, pos: 1})),
 ));
 
-const [petByID, pets$] = partitionByKey(petRace$, x => x.id)
-const keyMap$ = combineKeys(pets$, petByID);
+const [petByID, petIds$] = partitionByKey(petRace$, x => x.id)
+const keyMap$ = combineKeys(petIds$, petByID);
 
 const leadingPet$ = keyMap$.pipe(map(x => // map to pet with highest pos
   Array.from(x.entries())
@@ -73,10 +73,10 @@ const advancingPet$: Observable<Pet> = interval(1000).pipe(
   map((x: Map<number, Pet>) =>
     x.get(Math.floor(Math.random() * x.size)) as Pet),
   map(pet => ({...pet, pos: pet.pos + 1})),  // increment position
-  tap(petRaceDispatch),
+  tap(updatePet),
 );
 
-const [usePetIDs] = bind(pets$);
+const [usePetIDs] = bind(petIds$);
 const [usePetByID] = bind((petId:number) => petByID(petId));
 const [useLeader] = bind(leadingPet$, null);
 const [useAdvancingPet] = bind(advancingPet$, null);

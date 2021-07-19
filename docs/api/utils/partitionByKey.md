@@ -68,21 +68,21 @@ interface Pet {
   pos?: number;
 }
 
-const pets = ["Fluffy", "Bella", "Nala", "Nocturne", "Teddy"]
+const petNames = ["Fluffy", "Bella", "Nala", "Nocturne", "Teddy"]
                .map((pet, id): Pet => ({pet, id}));
 
 const [petUpdate$, updatePet] = createSignal<Pet>();
 
 // Let's line up our pets
-const petRace$ = merge(of(...pets), petUpdate$);
+const petRace$ = merge(of(...petNames), petUpdate$);
 
-const [petByID, pets$] = partitionByKey(
+const [petByID, petIds$] = partitionByKey(
   petRace$,
   x => x.id,
 )
 
 const [usePetByID] = bind((id: number) => petByID(id));
-const [usePetIDs] = bind(pets$);
+const [usePetIDs] = bind(petIds$);
 
 const PetItem = ({petID}: {petID: number}) => {
   const pet = usePetByID(petID);
