@@ -29,7 +29,7 @@ of input Observables. Default: `null`.
 #### Returns
 
 `Observable<OT[keyof O]>`: An observable that emits a flux-like object that contains 2 properties:
-- `key`: they key of the stream that has emitted.
+- `type`: the key of the stream that has emitted.
 - `payload`: the emitted value.
 
 ### Example
@@ -37,11 +37,11 @@ of input Observables. Default: `null`.
 ```ts
 import { Subject } from "rxjs"
 import { scan, startWith } from 'rxjs/operators'
-import { mergeWithKey } from '@react-rxjs/utils'
+import { mergeWithKey, createSignal } from '@react-rxjs/utils'
 
-const inc$ = new Subject()
-const dec$ = new Subject()
-const resetTo$ = new Subject<number>()
+const [inc$, doInc] = createSignal();
+const [dec$, doDec] = createSignal();
+const [resetTo$, doResetTo] = createSignal<number>();
 
 const counter$ = mergeWithKey({
   inc$,

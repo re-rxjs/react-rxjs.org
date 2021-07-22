@@ -10,13 +10,13 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 React-RxJS is published in npm as `@react-rxjs/core`
 
 ```sh
-npm i rxjs @react-rxjs/core
+npm i rxjs @react-rxjs/core @react-rxjs/utils
 ```
 
 or using yarn
 
 ```sh
-yarn add rxjs @react-rxjs/core
+yarn add rxjs @react-rxjs/core @react-rxjs/utils
 ```
 
 ## Create a hook from an observable
@@ -78,7 +78,7 @@ Something to note is that a subscription on the underlying observable must be pr
 function CharacterCounter() {
   return (
     <div>
-      <Subscribe source$={charCount$}>
+      <Subscribe>
         <TextInput />
         <CharacterCount />
       </Subscribe>

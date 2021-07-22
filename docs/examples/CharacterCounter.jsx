@@ -34,7 +34,7 @@ function CharacterCount() {
 export default function CharacterCounter() {
   return (
     <div>
-      <Subscribe source$={charCount$}>
+      <Subscribe>
         <TextInput />
         <CharacterCount />
       </Subscribe>

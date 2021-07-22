@@ -28,6 +28,86 @@ export function partitionByKey<T, K, R>(
 
 2. A stream with the list of active keys
 
+### Examples
+
+```ts
+const source = interval(1000);
+const [getGroupByKey, keys$] = partitionByKey(
+  source,
+  x => x % 2 == 0 ? "even" : "odd",
+  (groupedObservable$, key) => groupedObservable$.pipe(map(x => `${x} is ${key}`))
+);
+
+const [useEven, even$] = bind(getGroupByKey("even"));
+const [useOdd, odd$] = bind(getGroupByKey("odd"));
+const [useKeys] = bind(keys$);
+
+function MyComponent() {
+  const odd = useOdd();
+  const even = useEven();
+  const keys = useKeys();
+
+  return (
+    <>
+      <div>Your keys are: {keys.join(", ")}</div>
+      <div>{odd}</div>
+      <div>{even}</div>
+    </>
+  );
+}
+```
+
+A more typical list example. The list component can bind the list of keys
+while the item component binds the stream for each item, eliminating
+unnecessary renders:
+
+```tsx
+interface Pet {
+  id: number;
+  pet: string,
+  pos?: number;
+}
+
+const petNames = ["Fluffy", "Bella", "Nala", "Nocturne", "Teddy"]
+               .map((pet, id): Pet => ({pet, id}));
+
+const [petUpdate$, updatePet] = createSignal<Pet>();
+
+// Let's line up our pets
+const petRace$ = merge(of(...petNames), petUpdate$);
+
+const [petByID, petIds$] = partitionByKey(
+  petRace$,
+  x => x.id,
+)
+
+const [usePetByID] = bind((id: number) => petByID(id));
+const [usePetIDs] = bind(petIds$);
+
+const PetItem = ({petID}: {petID: number}) => {
+  const pet = usePetByID(petID);
+
+  return (
+    <li>
+      <div style={{width:'100%', textAlign:'right'}}>
+        {pet.pet}
+      </div>
+      <br />
+      <div style={{textAlign:'left'}}>
+        {'*'.repeat(pet.pos || 1)}
+      </div>
+    </li>
+  );
+}
+
+const PetList = () => {
+  const petIDs = usePetIDs();
+
+  return (<ul>{petIDs.map(x => (<PetItem key={x} petID={x} />))}</ul>);
+}
+```
+
+
 ## See also
 
 - [`combineKeys()`](combineKeys)
