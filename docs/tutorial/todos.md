@@ -115,7 +115,7 @@ some important differences:
   a complex inner stream that will become the "grouped" stream that is
   returned.
 - This returned stream is enhanced with a
-  [`shareLatest`](../api/utils/shareLatest) and `partitionByKey` internally
+  [`shareLatest`](../api/core/shareLatest) and `partitionByKey` internally
   subscribes to it as soon as it is created to ensure that the consumer always
   has the latest value.
 
@@ -382,7 +382,7 @@ function TodoListStats() {
 
 The result of this tutorial can be seen in this CodeSandbox:
 
-<iframe src="https://codesandbox.io/embed/react-rxjs-basic-todos-6xdwu?fontsize=14&hidenavigation=1&theme=dark&view=editor&module=%2Fsrc%2Fstate.ts"
+<iframe src="https://codesandbox.io/embed/react-rxjs-basic-todos-nd8rn?fontsize=14&hidenavigation=1&theme=dark&view=editor"
      style={{ width: '100%', height: '500px', border: 0, borderRadius: '4px', overflow: 'hidden' }}
      title="react-rxjs-github-issues-example"
      allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb"
