@@ -87,6 +87,10 @@ module.exports = {
     prism: {
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/vsDark'),
+    },
+    algolia: {
+      apiKey: 'a00665c1f042da87ad406796d77d2ecd',
+      indexName: 'react-rxjs',
     }
   },
   presets: [
