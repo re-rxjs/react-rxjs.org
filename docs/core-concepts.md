@@ -278,7 +278,10 @@ Note that for this to work properly, you need to have proper Suspense boundaries
 import { ajax } from "rxjs/ajax"
 import { bind } from "@react-rxjs/core"
 
-const [useTodos, todos$] = bind(ajax.getJSON("/todos"), null)
+const [useTodos, todos$] = bind(
+  ajax.getJSON("/todos"),
+  null
+)
 ```
 
 Now `useTodos` will emit `null` immediately while it's fetching data (so that we can manually handle that), instead of suspending the component, and when the ajax call is resolved, it will emit the result of that call.
