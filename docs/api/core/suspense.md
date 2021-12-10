@@ -7,21 +7,23 @@ know that there is a value on its way, and that we want to leverage React Suspen
 while we are waiting for that value.
 
 ```ts
-const SUSPENSE: unique symbol;
+const SUSPENSE: unique symbol
 ```
 
 ### Example
 
 ```ts
-import { concat, switchMap } from 'rxjs/operators'
-import { SUSPENSE } from '@react-rxjs/core'
+import { concat, of } from "rxjs"
+import { switchMap } from "rxjs/operators"
+import { SUSPENSE } from "@react-rxjs/core"
 
 const story$ = selectedStoryId$.pipe(
-  switchMap((id) => concat(SUSPENSE, getStory$(id))),
+  switchMap((id) => concat(of(SUSPENSE), getStory$(id))),
 )
 ```
 
 ## See also
-* [`suspend()`](../utils/suspend)
-* [`suspended()`](../utils/suspended)
-* [`<Suspense />`](https://reactjs.org/docs/concurrent-mode-suspense.html) (React)
+
+- [`suspend()`](../utils/suspend)
+- [`suspended()`](../utils/suspended)
+- [`<Suspense />`](https://reactjs.org/docs/concurrent-mode-suspense.html) (React)
