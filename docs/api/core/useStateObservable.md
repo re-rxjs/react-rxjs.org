@@ -38,7 +38,7 @@ function CounterDisplay() {
 ```
 
 :::note
-It's important to note that the `StateObservable` must be created outside the React Component, otherwise it could run into an infinite loop.
+It's important to note that the `StateObservable` must be created outside the React render function, otherwise it could run into an infinite loop.
 
 For observables that need an instance id, use the parametric overload of `state`. For observables that need other parameters as input, try to model these parameters as other StateObservables of your application and use RxJS Observable composition.
 :::
