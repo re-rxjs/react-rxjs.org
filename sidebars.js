@@ -8,9 +8,12 @@ module.exports = {
         label: "Core",
         items: [
           "api/core/bind",
+          "api/core/state",
+          "api/core/useStateObservable",
           "api/core/shareLatest",
           "api/core/suspense",
           "api/core/subscribe",
+          "api/core/StateObservable",
         ],
       },
       {
@@ -34,8 +37,8 @@ module.exports = {
               "api/utils/split",
               "api/utils/collect",
               "api/utils/collectValues",
-            ]
-          }
+            ],
+          },
         ],
       },
     ],
