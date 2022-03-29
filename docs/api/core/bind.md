@@ -37,14 +37,12 @@ subscription is closed as soon as there are no subscribers to that Observable.
 ### Example
 
 ```tsx
-import { scan, startWith } from "rxjs/operators"
+import { scan } from "rxjs/operators"
 import { bind } from "@react-rxjs/core"
 
 const [useCounter, counter$] = bind(
-  clicks$.pipe(
-    scan((prev) => prev + 1, 0),
-    startWith(0),
-  ),
+  clicks$.pipe(scan((prev) => prev + 1, 0)),
+  0,
 )
 
 function CounterDisplay() {
