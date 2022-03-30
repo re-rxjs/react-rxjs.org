@@ -69,4 +69,5 @@ You can use the `<Subscribe>{children}</Subscribe>` component to help manage you
 ## See also
 
 - [`state()`](./state)
+- [`bind()`](./bind)
 - [`<Subscribe />`](./subscribe)

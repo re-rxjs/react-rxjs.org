@@ -82,6 +82,7 @@ getPrice$("apples").subscribe({
 
 ## See also
 
+- [`bind()`](./bind)
 - [`useStateObservable()`](./useStateObservable)
 - [`StateObservable`](./StateObservable)
 
