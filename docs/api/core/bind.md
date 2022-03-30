@@ -9,7 +9,14 @@ Binds an Observable to React, and returns a hook and shared stream representing 
 function bind<T>(
   observable: Observable<T>,
   defaultValue?: T,
-): [() => Exclude<T, typeof SUSPENSE>, Observable<T>]
+) {
+  const state$ = state(observable, defaultValue);
+
+  return [
+    () => useStateObservable(state$),
+    state$
+  ];
+}
 ```
 
 #### Arguments
@@ -24,9 +31,10 @@ function bind<T>(
 1. A React Hook that yields the latest emitted value of the Observable. If the
    Observable doesn't synchronously emit a value, it will return the
    `defaultValue` if provided, otherwise it will leverage React Suspense
-   while it's waiting for the first value.
+   while it's waiting for the first value. It's equivalent to `useStateObservable`
+   of the resulting StateObservable.
 
-2. The shared Observable that the hook uses: It also replays back the latest
+2. The `StateObservable` that the hook uses: It also replays back the latest
    value emitted. It can be used for composing other streams that depend on it.
 
 :::note
@@ -60,7 +68,14 @@ Binds an Observable factory function to React, and returns a hook and shared str
 function bind<A extends unknown[], O>(
   getObservable: (...args: A) => Observable<O>,
   defaultValue?: (...args: A) => T | T,
-): [(...args: A) => Exclude<O, typeof SUSPENSE>, (...args: A) => Observable<O>]
+) {
+  const state$ = state(getObservable, defaultValue);
+
+  return [
+    (...args: A) => useStateObservable(state$(...args)),
+    state$
+  ];
+}
 ```
 
 #### Arguments
@@ -76,9 +91,10 @@ function bind<A extends unknown[], O>(
    will yield the latest update from the Observable returned from the factory function.
    If the Observable doesn't synchronously emit a value, it will return the
    `defaultValue` if provided, otherwise it will leverage React Suspense
-   while it's waiting for the first value.
+   while it's waiting for the first value. It's equivalent to `useStateObservable`
+   of the resulting StateObservable.
 
-2. The factory function that returns the shared Observable that the hook uses
+2. The factory function that returns the `StateObservable` that the hook uses
    for the specific arguments. It can be used for composing other streams that depend on it.
 
 ### Example
@@ -99,3 +115,8 @@ const Story: React.FC<{ id: number }> = ({ id }) => {
   )
 }
 ```
+
+## See also
+
+- [`state()`](./state)
+- [`useStateObservable()`](./useStateObservable)

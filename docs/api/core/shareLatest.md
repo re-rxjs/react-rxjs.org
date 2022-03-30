@@ -5,22 +5,22 @@ title: shareLatest()
 An RxJS [pipeable operator] which multicasts the source stream and replays the
 latest emitted value.
 
+It's a utility function kept for historical purposes. Since RxJS@^7.0.0 released, it's equivalent to:
+
 ```ts
-function shareLatest<T>(): MonoTypeOperatorFunction<T>
+import { share } from 'rxjs/operators';
+
+function shareLatest<T>() {
+  return share<T>({
+    connector: () => new ReplaySubject(1)
+  })
+}
 ```
 
 #### Returns
 
 [`MonoTypeOperatorFunction<T>`]: An Observable that shares the latest emitted value from the
 source Observable with all subscribers, and restarts the stream when it completes or errors.
-
-### Description
-
-It's similar to RxJS's `shareReplay({ refCount: true, bufferSize: 1 })`, but
-with one difference: If the source stream completes or errors, `shareReplay`
-will repeat that event for every new subscriber, whereas `shareLatest`
-propagates the event to all the current subscribers, and restarts the source
-subscription on the next outer subscription.
 
 ### Example
 
@@ -37,8 +37,8 @@ const activePlanetName$ = planet$.pipe(
 
 ## See also
 
-- [`shareReplay`] (RxJS)
+- [`share`] (RxJS)
 
-[`sharereplay`]: https://rxjs.dev/api/operators/shareReplay
+[`share`]: https://rxjs.dev/api/operators/share
 [`monotypeoperatorfunction<t>`]: https://rxjs.dev/api/index/interface/MonoTypeOperatorFunction
 [pipeable operator]: https://rxjs.dev/guide/v6/pipeable-operators
