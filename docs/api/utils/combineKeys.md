@@ -8,7 +8,7 @@ of each key.
 
 ```ts
 export const combineKeys = <K, T>(
-  keys$: Observable<Array<K> | Set<K>>,
+  keys$: Observable<Iterable<K> | KeyChanges<K>>,
   getInner$: (key: K) => Observable<T>,
 ): Observable<Map<K, T>>
 ```
@@ -53,8 +53,8 @@ const petRace$ = petUpdate$.pipe(startWith(
   ...petNames.map((pet, id): Pet => ({pet, id, pos: 1})),
 ));
 
-const [petByID, petIds$] = partitionByKey(petRace$, x => x.id)
-const keyMap$ = combineKeys(petIds$, petByID);
+const [petByID, petIdChange$] = partitionByKey(petRace$, x => x.id)
+const keyMap$ = combineKeys(petIdChange$, petByID);
 
 const leadingPet$ = keyMap$.pipe(map(x => // map to pet with highest pos
   Array.from(x.entries())
@@ -76,7 +76,6 @@ const advancingPet$: Observable<Pet> = interval(1000).pipe(
   tap(updatePet),
 );
 
-const [usePetIDs] = bind(petIds$);
 const [usePetByID] = bind((petId:number) => petByID(petId));
 const [useLeader] = bind(leadingPet$, null);
 const [useAdvancingPet] = bind(advancingPet$, null);
