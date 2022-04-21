@@ -557,7 +557,7 @@ using React's Suspense:
 ```diff
 -import React from 'react'
 +import React, { Suspense } from 'react'
-+import { useCurrentRepoOpenIssuesCount, useCurrentRepo } from 'state'
++import { useOpenIssuesLen, useCurrentRepo } from 'state'
 
 -interface OrgProps {
 -  org: string
@@ -599,7 +599,7 @@ using React's Suspense:
 -    )
 -  }
 +function OpenIssues() {
-+  const openIssuesCount = useCurrentRepoOpenIssuesCount()
++  const openIssuesCount = useOpenIssuesLen()
 +  return (
 +    <>
 +      <span className="header__openIssues">{openIssuesCount}</span> open{' '}
