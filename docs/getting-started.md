@@ -28,7 +28,7 @@ import { bind } from "@react-rxjs/core"
 import { createSignal } from "@react-rxjs/utils"
 
 // A signal is an entry point to react-rxjs. It's equivalent to using a subject
-const [textChange$, setText] = createSignal();
+const [textChange$, setText] = createSignal<string>();
 
 const [useText, text$] = bind(textChange$, "")
 
