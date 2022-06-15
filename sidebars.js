@@ -13,6 +13,7 @@ module.exports = {
           "api/core/shareLatest",
           "api/core/suspense",
           "api/core/subscribe",
+          "api/core/removeSubscribe",
           "api/core/StateObservable",
         ],
       },
