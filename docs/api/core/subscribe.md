@@ -5,7 +5,7 @@ title: <Subscribe />
 
 A React Component that manages the subscription of its children's Observables.
 
-It will subscribe to all the observables used by its children before they get 
+It will subscribe to all the observables used by its children before they get
 mounted, and will unsubscribe from all of them once it unmounts.
 
 If given a fallback, it also acts as a Suspense boundary, rendering the fallback
@@ -32,3 +32,7 @@ This Component doesn't trigger any updates if any of its subscription emits.
 This Component first mounts itself rendering `null`, subscribes to `source$` and
 then it renders its children.
 :::
+
+## See also
+
+- [`<RemoveSubscribe />`](./RemoveSubscribe)
