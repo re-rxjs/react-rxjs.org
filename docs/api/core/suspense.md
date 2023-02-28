@@ -24,6 +24,6 @@ const story$ = selectedStoryId$.pipe(
 
 ## See also
 
-- [`suspend()`](../utils/suspend)
-- [`suspended()`](../utils/suspended)
+- [`suspend()`](../../utils/suspend)
+- [`suspended()`](../../utils/suspended)
 - [`<Suspense />`](https://reactjs.org/docs/concurrent-mode-suspense.html) (React)
