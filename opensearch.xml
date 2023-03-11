@@ -7,5 +7,5 @@
   <Image width="16" height="16" type="image/x-icon">https://react-rxjs.org/img/favicon.ico</Image>
   <Url type="text/html" method="get" template="https://react-rxjs.org/search?q={searchTerms}"/>
   <Url type="application/opensearchdescription+xml" rel="self" template="https://react-rxjs.org/opensearch.xml" />
-  <moz:SearchForm>https://react-rxjs.org</moz:SearchForm>
+  <moz:SearchForm>https://react-rxjs.org/</moz:SearchForm>
 </OpenSearchDescription>
