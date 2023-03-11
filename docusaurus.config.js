@@ -2,6 +2,7 @@ module.exports = {
   title: "React-RxJS",
   tagline: "React bindings for RxJS",
   url: "https://react-rxjs.org",
+  trailingSlash: false,
   baseUrl: "/",
   favicon: "img/favicon.ico",
   organizationName: "re-rxjs", // Usually your GitHub org/user name.
@@ -85,13 +86,14 @@ module.exports = {
       copyright: `Built with Docusaurus.`,
     },
     prism: {
-      theme: require('prism-react-renderer/themes/github'),
-      darkTheme: require('prism-react-renderer/themes/vsDark'),
+      theme: require("prism-react-renderer/themes/github"),
+      darkTheme: require("prism-react-renderer/themes/vsDark"),
     },
     algolia: {
-      apiKey: 'a00665c1f042da87ad406796d77d2ecd',
-      indexName: 'react-rxjs',
-    }
+      appId: "C2IU63PPUP",
+      apiKey: "036a3e9be4079440fd0da49daae6f68a",
+      indexName: "react-rxjs",
+    },
   },
   presets: [
     [
