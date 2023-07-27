@@ -51,10 +51,10 @@ Which is basically the same as doing this (but a lot shorter, of course :smile:)
 
 ```tsx
 const todoActions$ = merge(
-  newTodo$.pipe(map(text, id) => ({
-    type: "add" as const
+  newTodo$.pipe(map((text, id) => ({
+    type: "add" as const,
     payload: { id, text },
-  })),
+  }))),
   editTodo$.pipe(map(payload => ({
     type: "edit" as const,
     payload,
@@ -138,7 +138,7 @@ And with this we are ready to start wiring things up.
 Let's start with the top-level component:
 
 ```tsx
-const [useTodos] = bind(todosMap$.pipe(map(todosMap => [...todosMap.values()])))
+const [useTodos] = bind(todosMap$.pipe(map(todosMap => Array.from(todosMap.values()))))
 
 function TodoList() {
   const todoList = useTodos()
