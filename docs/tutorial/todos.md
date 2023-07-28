@@ -138,7 +138,7 @@ And with this we are ready to start wiring things up.
 Let's start with the top-level component:
 
 ```tsx
-const [useTodos] = bind(todosMap$.pipe(map(todosMap => Array.from(todosMap.values()))))
+const [useTodos] = bind(todosMap$.pipe(map(todosMap => [...todosMap.values()])))
 
 function TodoList() {
   const todoList = useTodos()
