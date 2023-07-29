@@ -51,10 +51,10 @@ Which is basically the same as doing this (but a lot shorter, of course :smile:)
 
 ```tsx
 const todoActions$ = merge(
-  newTodo$.pipe(map(text, id) => ({
-    type: "add" as const
+  newTodo$.pipe(map((text, id) => ({
+    type: "add" as const,
     payload: { id, text },
-  })),
+  }))),
   editTodo$.pipe(map(payload => ({
     type: "edit" as const,
     payload,
