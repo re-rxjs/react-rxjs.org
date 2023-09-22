@@ -18,6 +18,11 @@ const Subscribe: React.FC<{
 }>
 ```
 
+:::caution Important
+This Component first mounts itself rendering the fallback (or `null` if it wasn't provided), subscribes to `source$` and
+then it renders its children.
+:::
+
 #### Properties
 
 - `source$`: (Optional) Source Observable that the Component should subscribe to, before its children renders.
@@ -26,11 +31,6 @@ const Subscribe: React.FC<{
 
 :::note
 This Component doesn't trigger any updates if any of its subscription emits.
-:::
-
-:::note Important
-This Component first mounts itself rendering `null`, subscribes to `source$` and
-then it renders its children.
 :::
 
 ## See also
