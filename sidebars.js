@@ -27,7 +27,7 @@ module.exports = {
           "api/utils/createKeyedSignal",
           "api/utils/mergeWithKey",
           "api/utils/partitionByKey",
-          "api/utils/selfDependant",
+          "api/utils/selfDependent",
           "api/utils/suspend",
           "api/utils/suspended",
           "api/utils/switchMapSuspended",
