@@ -31,6 +31,7 @@ module.exports = {
           "api/utils/suspend",
           "api/utils/suspended",
           "api/utils/switchMapSuspended",
+          "api/utils/toKeySet",
           {
             type: "category",
             label: "Deprecated",

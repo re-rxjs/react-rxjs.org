@@ -11,7 +11,12 @@ export function partitionByKey<T, K, R>(
   stream: Observable<T>,
   keySelector: (value: T) => K,
   streamSelector: (grouped: Observable<T>, key: K) => Observable<R>,
-): [(key: K) => GroupedObservable<K, R>, Observable<K[]>]
+): [(key: K) => GroupedObservable<K, R>, Observable<KeyChanges<K>>]
+
+interface KeyChanges<K> {
+  type: "add" | "remove"
+  keys: Iterable<K>
+}
 ```
 
 #### Arguments
@@ -26,13 +31,13 @@ export function partitionByKey<T, K, R>(
 
 1. A function that accepts a key and returns a stream for the group of that key.
 
-2. A stream with the list of active keys
+2. A stream of KeyChanges, an object the describes what keys have been added or deleted.
 
 ### Examples
 
 ```ts
 const source = interval(1000);
-const [getGroupByKey, keys$] = partitionByKey(
+const [getGroupByKey, keyChanges$] = partitionByKey(
   source,
   x => x % 2 == 0 ? "even" : "odd",
   (groupedObservable$, key) => groupedObservable$.pipe(map(x => `${x} is ${key}`))
@@ -40,7 +45,12 @@ const [getGroupByKey, keys$] = partitionByKey(
 
 const [useEven, even$] = bind(getGroupByKey("even"));
 const [useOdd, odd$] = bind(getGroupByKey("odd"));
-const [useKeys] = bind(keys$);
+const [useKeys] = bind(
+  keys$.pipe(
+    toKeySet(),
+    map(keySet => Array.from(keySet))
+  )
+);
 
 function MyComponent() {
   const odd = useOdd();
@@ -76,13 +86,16 @@ const [petUpdate$, updatePet] = createSignal<Pet>();
 // Let's line up our pets
 const petRace$ = merge(of(...petNames), petUpdate$);
 
-const [petByID, petIds$] = partitionByKey(
+const [petByID, petIdChange$] = partitionByKey(
   petRace$,
   x => x.id,
 )
 
 const [usePetByID] = bind((id: number) => petByID(id));
-const [usePetIDs] = bind(petIds$);
+const [usePetIDs] = bind(petIdChange$.pipe(
+  toKeySet(),
+  map(keySet => Array.from(keySet))
+));
 
 const PetItem = ({petID}: {petID: number}) => {
   const pet = usePetByID(petID);
@@ -111,3 +124,4 @@ const PetList = () => {
 ## See also
 
 - [`combineKeys()`](combineKeys)
+- [`toKeySet()`](toKeySet)
