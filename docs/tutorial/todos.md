@@ -78,7 +78,7 @@ the [`partitionByKey`](../api/utils/partitionByKey) operator:
 
 ```ts
 type Todo = { id: number; text: string; done: boolean };
-const [todosMap, keys$] = partitionByKey(
+const [todosMap, keyChanges$] = partitionByKey(
   todoActions$,
   event => event.payload.id,
   (event$, id) =>
@@ -109,7 +109,7 @@ some important differences:
 
 - `partitionByKey` gives you a function that returns an Observable, rather
   than an Observable that emits Observables. It also provides an Observable
-  that emits the list of keys, whenever that list changes (`keys$` in the code
+  that emits the keys that have changed (`keyChanges$` in the code
   above).
 - `partitionByKey` has an optional third parameter which allows you to create
   a complex inner stream that will become the "grouped" stream that is
@@ -122,13 +122,13 @@ some important differences:
 ## Collecting the GroupedObservables
 
 We now have a way of getting streams for each todo, and we have a stream
-(`keys$`) that represents the list of todos by their ids and emits whenever
-one is added or deleted. We should also like a stream that emits whenever
+(`keyChanges$`) that represents the keys that were added or removed.
+We should also like a stream that emits whenever
 the state of any todo changes, and gives us access to all of them.
 [`combineKeys()`](../api/utils/combineKeys) suits this purpose. Let's try it:
 
 ```ts
-const todosMap$: Observable<Map<number, Todo>> = combineKeys(keys$, todosMap);
+const todosMap$: Observable<Map<number, Todo>> = combineKeys(keyChanges$, todosMap);
 ```
 
 And with this we are ready to start wiring things up.
@@ -238,7 +238,12 @@ _which_ todos exist. Luckily we already have a stream for that, returned above
 by `partitionByKey`. So:
 
 ```tsx
-const [useTodoIds] = bind(keys$);
+const [useTodoIds] = bind(
+  keyChanges$.pipe(
+    toKeySet(),
+    map((set) => Array.from(set))
+  )
+);
 ```
 
 Simple! Now we edit our TodoList component to pass just the todo id:
