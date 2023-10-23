@@ -148,7 +148,11 @@ function App() {
 
 When a React-RxJS hook has a default value and no one is subscribed to its observable, on the first render it will return that value, and then it will safely subscribe to the source after mounting. If the underlying observable did have a subscription before the component was mounted, it will directly get the current value instead.
 
-If you don't give it a default value, you will need to make sure that observable has a subscription active before the Component that uses that hook is called. React-RxJS has a utility that helps with this: `<Subscribe source$={stream}>{ children }</Subscribe>` will render `{ children }` only after subscribing to its `source$`. `Subscribe` also subscribes to all the observables used by its children (as if it were a React's Context), so in this case we can just omit `source$`
+If you don't give it a default value, you will need to make sure that observable has a subscription active before the Component that uses that hook is called.
+
+React-RxJS has a utility that helps with this: `<Subscribe source$={stream}>{ children }</Subscribe>` will render `{ children }` only after subscribing to its `source$`. On the initial render, when it hasn't subscribed to the stream yet, it will render `null`.
+
+`Subscribe` also subscribes to all the observables used by its children (as if it were a React's Context), so in this case we can just omit `source$`
 
 
 ```tsx
